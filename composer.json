@@ -3,6 +3,7 @@
     "description": "ABC framework kernel",
     "license": "MIT",
     "require": {
+        "php": ">=7.2",
         "nikic/fast-route": "^1.3",
         "psr/container": "^1.0",
         "psr/http-factory": "^1.0",
@@ -10,10 +11,25 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0"
     },
+    "require-dev": {
+        "nyholm/psr7": "^1.0",
+        "phpmetrics/phpmetrics": "^2.4",
+        "phpunit/phpunit": "^7.4",
+        "uma/dic": "^1.0"
+    },
     "autoload": {
         "psr-4": {
             "ABC\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ABC\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "analyze": "vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .",
+        "test": "vendor/bin/phpunit"
     },
     "config": {
         "sort-packages": true
