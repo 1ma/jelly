@@ -44,11 +44,6 @@ class Kernel implements Server\RequestHandlerInterface
         $this->routes = new RouteCollection;
     }
 
-    public function getContainer(): Container\ContainerInterface
-    {
-        return $this->container;
-    }
-
     /**
      * @throws Container\NotFoundExceptionInterface
      */
@@ -63,6 +58,30 @@ class Kernel implements Server\RequestHandlerInterface
     public function post(string $pattern, string $service): void
     {
         $this->map('POST', $pattern, $service);
+    }
+
+    /**
+     * @throws Container\NotFoundExceptionInterface
+     */
+    public function put(string $pattern, string $service): void
+    {
+        $this->map('PUT', $pattern, $service);
+    }
+
+    /**
+     * @throws Container\NotFoundExceptionInterface
+     */
+    public function update(string $pattern, string $service): void
+    {
+        $this->map('UPDATE', $pattern, $service);
+    }
+
+    /**
+     * @throws Container\NotFoundExceptionInterface
+     */
+    public function delete(string $pattern, string $service): void
+    {
+        $this->map('DELETE', $pattern, $service);
     }
 
     /**
@@ -83,6 +102,11 @@ class Kernel implements Server\RequestHandlerInterface
         Assert::hasService($this->container, $service);
 
         $this->middlewares[] = $service;
+    }
+
+    public function getContainer(): Container\ContainerInterface
+    {
+        return $this->container;
     }
 
     /**
