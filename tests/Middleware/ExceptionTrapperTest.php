@@ -47,7 +47,7 @@ final class ExceptionTrapperTest extends TestCase
                     $this->phpunit::assertInstanceOf(Throwable::class, $exception);
                     $this->phpunit::assertSame('Whoops', $exception->getMessage());
 
-                    return new Response(500, [], 'All is lost!');
+                    return new Response($errorType, [], 'All is lost!');
                 }
             };
         });
@@ -96,7 +96,7 @@ final class ExceptionTrapperTest extends TestCase
             new class implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    throw new \RuntimeException('Whoops!');
+                    throw new \RuntimeException('Whoops');
                 }
             }
         );
@@ -113,7 +113,7 @@ final class ExceptionTrapperTest extends TestCase
             new class implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    throw new \RuntimeException('whoops');
+                    throw new \RuntimeException('Whoops');
                 }
             }
         );

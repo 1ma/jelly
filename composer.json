@@ -28,8 +28,11 @@
         }
     },
     "scripts": {
-        "analyze": "vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .",
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit",
+        "analyze": [
+            "@test",
+            "vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics ."
+        ]
     },
     "config": {
         "sort-packages": true
