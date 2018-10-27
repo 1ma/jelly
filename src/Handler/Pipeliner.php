@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ABC\Handler;
 
 use ABC\Constants;
+use ABC\Util\Assert;
 use ABC\Util\Seam;
 use Psr\Container;
 use Psr\Http\Message;
@@ -38,8 +39,8 @@ final class Pipeliner implements Server\RequestHandlerInterface
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        $pipe = $this->container->get(
-            $request->getAttribute(Constants::HANDLER)
+        $pipe = Assert::isARequestHandler(
+            $this->container->get($request->getAttribute(Constants::HANDLER))
         );
 
         foreach ($this->middlewares as $service) {
