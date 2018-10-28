@@ -41,6 +41,7 @@ class Kernel implements Server\RequestHandlerInterface
         Assert::hasService($container, Constants::EXCEPTION_HANDLER);
 
         $this->container = $container;
+        $this->middlewares = [];
         $this->routes = new RouteCollection;
     }
 
