@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests;
+namespace ABC\Tests\Middleware;
 
 use ABC\Constants;
 use ABC\Middleware\ExceptionTrapper;

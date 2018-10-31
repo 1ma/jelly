@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace ABC;
 
-use ABC\Handler\Pipeliner;
 use ABC\Middleware\ExceptionTrapper;
-use ABC\Middleware\RequestRouter;
+use ABC\Handler\RequestRouter;
 use ABC\Util\Assert;
 use ABC\Util\RouteCollection;
 use ABC\Util\Seam;
@@ -115,20 +114,15 @@ class Kernel implements Server\RequestHandlerInterface
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        $exceptionHandling = new ExceptionTrapper(
-            $this->container
-        );
-
-        $routing = new RequestRouter(
-            $this->container,
-            $this->routes
-        );
-
-        $middlewaring = new Pipeliner(
-            $this->container,
-            $this->middlewares
-        );
-
-        return $exceptionHandling->process($request, new Seam($routing, $middlewaring));
+        return Seam::compose(
+            new RequestRouter(
+                $this->container,
+                $this->routes,
+                ...$this->middlewares
+            ),
+            new ExceptionTrapper(
+                $this->container
+            )
+        )->handle($request);
     }
 }

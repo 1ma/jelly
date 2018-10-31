@@ -28,15 +28,15 @@ final class Seam implements Server\RequestHandlerInterface
         $this->next = $next;
     }
 
-    public static function compose(Server\RequestHandlerInterface $last, Server\MiddlewareInterface ...$middlewares)
+    public static function compose(Server\RequestHandlerInterface $bottom, Server\MiddlewareInterface ...$middlewares)
     {
-        $pipe = $last;
+        $stack = $bottom;
 
         foreach ($middlewares as $middleware) {
-            $pipe = new self($middleware, $pipe);
+            $stack = new self($middleware, $stack);
         }
 
-        return $pipe;
+        return $stack;
     }
 
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
