@@ -14,7 +14,7 @@ use Psr\Http\Server;
  * @see https://security.stackexchange.com/a/147559/70983
  * @see https://www.owasp.org/index.php/REST_Security_Cheat_Sheet
  */
-class SecurityHeadersMiddleware implements Server\MiddlewareInterface
+class SecurityHeaders implements Server\MiddlewareInterface
 {
     /**
      * @var int

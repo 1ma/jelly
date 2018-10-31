@@ -39,14 +39,13 @@ final class Pipeliner implements Server\RequestHandlerInterface
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        $pipe = Assert::isARequestHandler(
-            $this->container->get($request->getAttribute(Constants::HANDLER))
-        );
-
-        foreach ($this->middlewares as $service) {
-            $pipe = new Seam($this->container->get($service), $pipe);
-        }
-
-        return $pipe->handle($request);
+        return Seam::compose(
+            $this->container->get(
+                $request->getAttribute(Constants::HANDLER)
+            ),
+            ...\array_map(function(string $service) {
+                return $this->container->get($service);
+            }, $this->middlewares)
+        )->handle($request);
     }
 }
