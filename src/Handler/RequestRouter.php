@@ -6,7 +6,7 @@ namespace ABC\Handler;
 
 use ABC\Constants;
 use ABC\Util\Assert;
-use ABC\Util\Seam;
+use ABC\Handler\MiddlewareStack;
 use FastRoute;
 use Psr\Container;
 use Psr\Http\Message;
@@ -71,7 +71,7 @@ final class RequestRouter implements Server\RequestHandlerInterface
             );
         }
 
-        return Seam::compose(
+        return MiddlewareStack::compose(
             $this->container->get($routeInfo[1]),
             ...\array_map(function(string $service) {
                 return $this->container->get($service);

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace ABC;
 
-use ABC\Middleware\ExceptionTrapper;
-use ABC\Handler\RequestRouter;
-use ABC\Util\Assert;
-use ABC\Util\RouteCollection;
-use ABC\Util\Seam;
+use ABC\Handler;
+use ABC\Middleware;
+use ABC\Util;
 use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
@@ -21,27 +19,27 @@ class Kernel implements Server\RequestHandlerInterface
     private $container;
 
     /**
-     * @var RouteCollection
+     * @var Util\RouteCollection
      */
     private $routes;
 
     /**
      * @var string[]
      */
-    private $middlewares;
+    private $decorators;
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
     public function __construct(Container\ContainerInterface $container)
     {
-        Assert::hasService($container, Constants::NOT_FOUND_HANDLER);
-        Assert::hasService($container, Constants::BAD_METHOD_HANDLER);
-        Assert::hasService($container, Constants::EXCEPTION_HANDLER);
+        Util\Assert::hasService($container, Constants::NOT_FOUND_HANDLER);
+        Util\Assert::hasService($container, Constants::BAD_METHOD_HANDLER);
+        Util\Assert::hasService($container, Constants::EXCEPTION_HANDLER);
 
         $this->container = $container;
-        $this->middlewares = [];
-        $this->routes = new RouteCollection;
+        $this->decorators = [];
+        $this->routes = new Util\RouteCollection;
     }
 
     /**
@@ -89,7 +87,7 @@ class Kernel implements Server\RequestHandlerInterface
      */
     public function map(string $method, string $pattern, string $service): void
     {
-        Assert::hasService($this->container, $service);
+        Util\Assert::hasService($this->container, $service);
 
         $this->routes->addRoute($method, $pattern, $service);
     }
@@ -99,9 +97,9 @@ class Kernel implements Server\RequestHandlerInterface
      */
     public function decorate(string $service): void
     {
-        Assert::hasService($this->container, $service);
+        Util\Assert::hasService($this->container, $service);
 
-        $this->middlewares[] = $service;
+        $this->decorators[] = $service;
     }
 
     public function getContainer(): Container\ContainerInterface
@@ -114,13 +112,13 @@ class Kernel implements Server\RequestHandlerInterface
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        return Seam::compose(
-            new RequestRouter(
+        return Handler\MiddlewareStack::compose(
+            new Handler\RequestRouter(
                 $this->container,
                 $this->routes,
-                ...$this->middlewares
+                ...$this->decorators
             ),
-            new ExceptionTrapper(
+            new Middleware\ExceptionTrapper(
                 $this->container
             )
         )->handle($request);
