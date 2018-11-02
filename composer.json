@@ -15,6 +15,7 @@
         "nyholm/psr7": "^1.0",
         "phpmetrics/phpmetrics": "^2.4",
         "phpunit/phpunit": "^7.4",
+        "roave/security-advisories": "dev-master",
         "uma/dic": "^1.0"
     },
     "autoload": {
@@ -29,7 +30,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit --testdox",
-        "analyze": [
+        "metrics": [
             "@test",
             "vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics ."
         ]
