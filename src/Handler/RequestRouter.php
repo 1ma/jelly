@@ -6,7 +6,7 @@ namespace ABC\Handler;
 
 use ABC\Constants;
 use ABC\Util\Assert;
-use ABC\Handler\MiddlewareStack;
+use ABC\Util\Dictionary;
 use FastRoute;
 use Psr\Container;
 use Psr\Http\Message;
@@ -23,59 +23,54 @@ final class RequestRouter implements Server\RequestHandlerInterface
     /**
      * @var FastRoute\Dispatcher
      */
-    private $dispatcher;
+    private $router;
 
     /**
-     * @var string[]
+     * @var Dictionary
      */
-    private $middlewares;
+    private $dictionary;
 
     public function __construct(
         Container\ContainerInterface $container,
-        FastRoute\DataGenerator $generator,
-        string ...$middlewares
+        FastRoute\DataGenerator $routeCollection,
+        Dictionary $dictionary
     )
     {
         $this->container = $container;
-        $this->dispatcher = new FastRoute\Dispatcher\GroupCountBased($generator->getData());
-        $this->middlewares = $middlewares;
+        $this->router = new FastRoute\Dispatcher\GroupCountBased($routeCollection->getData());
+        $this->dictionary = $dictionary;
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      * @throws TypeError
      */
-    public function handle(
-        Message\ServerRequestInterface $request
-    ): Message\ResponseInterface
+    public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        $routeInfo = $this->dispatcher->dispatch(
-            $request->getMethod(), $request->getUri()->getPath()
+        $routeInfo = $this->router->dispatch(
+            $request->getMethod(),
+            $request->getUri()->getPath()
         );
 
         if (FastRoute\Dispatcher::NOT_FOUND === $routeInfo[0]) {
-            $fourOhFour = Assert::isARequestHandler($this->container->get(Constants::NOT_FOUND_HANDLER));
-
-            return $fourOhFour->handle(
-                $request->withAttribute(Constants::ERROR_TYPE, 404)
-            );
+            return Assert::isARequestHandler($this->container->get(Constants::NOT_FOUND_HANDLER))
+                ->handle($request->withAttribute(Constants::ERROR_TYPE, 404));
         }
 
         if (FastRoute\Dispatcher::METHOD_NOT_ALLOWED === $routeInfo[0]) {
-            $fourOhFive = Assert::isARequestHandler($this->container->get(Constants::BAD_METHOD_HANDLER));
-
-            return $fourOhFive->handle(
-                $request
-                    ->withAttribute(Constants::ERROR_TYPE, 405)
-                    ->withAttribute(Constants::ALLOWED_METHODS, $routeInfo[1])
-            );
+            return Assert::isARequestHandler($this->container->get(Constants::BAD_METHOD_HANDLER))
+                ->handle(
+                    $request
+                        ->withAttribute(Constants::ERROR_TYPE, 405)
+                        ->withAttribute(Constants::ALLOWED_METHODS, $routeInfo[1])
+                );
         }
 
         return MiddlewareStack::compose(
             $this->container->get($routeInfo[1]),
             ...\array_map(function(string $service) {
                 return $this->container->get($service);
-            }, $this->middlewares)
+            }, $this->dictionary->lookup($routeInfo[1]))
         )->handle(
             $request
                 ->withAttribute(Constants::HANDLER, $routeInfo[1])

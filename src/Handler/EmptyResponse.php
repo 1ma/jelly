@@ -8,8 +8,10 @@ use Psr\Http\Message;
 use Psr\Http\Server;
 
 /**
- * This handler can be used to return empty HTTP responses where only
- * the status code can vary.
+ * ABC's default handler for HTTP 404 and 500 errors.
+ *
+ * It can be used to return empty HTTP responses where
+ * only the status code can vary.
  */
 final class EmptyResponse implements Server\RequestHandlerInterface
 {

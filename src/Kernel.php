@@ -16,7 +16,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * @var Container\ContainerInterface
      */
-    private $container;
+    protected $container;
 
     /**
      * @var Util\RouteCollection
@@ -24,9 +24,14 @@ class Kernel implements Server\RequestHandlerInterface
     private $routes;
 
     /**
-     * @var string[]
+     * @var Server\MiddlewareInterface[]
      */
     private $decorators;
+
+    /**
+     * @var Util\Dictionary
+     */
+    private $dictionary;
 
     /**
      * @throws Container\NotFoundExceptionInterface
@@ -40,71 +45,80 @@ class Kernel implements Server\RequestHandlerInterface
         $this->container = $container;
         $this->decorators = [];
         $this->routes = new Util\RouteCollection;
+        $this->dictionary = new Util\Dictionary;
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function get(string $pattern, string $service): void
+    public function get(string $pattern, string $service, array $extraTags = []): void
     {
-        $this->map('GET', $pattern, $service);
+        $this->map('GET', $pattern, $service, $extraTags);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function post(string $pattern, string $service): void
+    public function post(string $pattern, string $service, array $extraTags = []): void
     {
-        $this->map('POST', $pattern, $service);
+        $this->map('POST', $pattern, $service, $extraTags);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function put(string $pattern, string $service): void
+    public function put(string $pattern, string $service, array $extraTags = []): void
     {
-        $this->map('PUT', $pattern, $service);
+        $this->map('PUT', $pattern, $service, $extraTags);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function update(string $pattern, string $service): void
+    public function update(string $pattern, string $service, array $extraTags = []): void
     {
-        $this->map('UPDATE', $pattern, $service);
+        $this->map('UPDATE', $pattern, $service, $extraTags);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function delete(string $pattern, string $service): void
+    public function delete(string $pattern, string $service, array $extraTags = []): void
     {
-        $this->map('DELETE', $pattern, $service);
+        $this->map('DELETE', $pattern, $service, $extraTags);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function map(string $method, string $pattern, string $service): void
+    public function map(string $method, string $pattern, string $service, array $extraTags = []): void
     {
         Util\Assert::hasService($this->container, $service);
 
         $this->routes->addRoute($method, $pattern, $service);
+
+        $this->dictionary->tag($service, $service);
+        foreach ($extraTags as $extraTag) {
+            $this->dictionary->tag($service, $extraTag);
+        }
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * Bind a $middleware (a service name) to the given $tag.
      */
-    public function decorate(string $service): void
+    public function add(string $tag, string $middleware)
     {
-        Util\Assert::hasService($this->container, $service);
+        Util\Assert::hasService($this->container, $middleware);
 
-        $this->decorators[] = $service;
+        $this->dictionary->push($tag, $middleware);
     }
 
-    public function getContainer(): Container\ContainerInterface
+    /**
+     * Wrap the whole Kernel with $middleware.
+     */
+    public function decorate(Server\MiddlewareInterface $middleware): void
     {
-        return $this->container;
+        $this->decorators[] = $middleware;
     }
 
     /**
@@ -116,11 +130,12 @@ class Kernel implements Server\RequestHandlerInterface
             new Handler\RequestRouter(
                 $this->container,
                 $this->routes,
-                ...$this->decorators
+                $this->dictionary
             ),
             new Middleware\ExceptionTrapper(
                 $this->container
-            )
+            ),
+            ...$this->decorators
         )->handle($request);
     }
 }

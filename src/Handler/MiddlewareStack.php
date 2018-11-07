@@ -19,21 +19,21 @@ final class MiddlewareStack implements Server\RequestHandlerInterface
      */
     private $next;
 
-    public static function compose(Server\RequestHandlerInterface $bottom, Server\MiddlewareInterface ...$decorators)
+    public static function compose(Server\RequestHandlerInterface $bottom, Server\MiddlewareInterface ...$decorators): Server\RequestHandlerInterface
     {
         $stack = $bottom;
 
         foreach ($decorators as $decorator) {
-            $stack = new self($decorator, $stack);
+            $stack = new self($stack, $decorator);
         }
 
         return $stack;
     }
 
-    private function __construct(Server\MiddlewareInterface $middleware, Server\RequestHandlerInterface $next)
+    private function __construct(Server\RequestHandlerInterface $next, Server\MiddlewareInterface $middleware)
     {
-        $this->middleware = $middleware;
         $this->next = $next;
+        $this->middleware = $middleware;
     }
 
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface

@@ -6,6 +6,7 @@ namespace ABC\Tests\Handler;
 
 use ABC\Constants;
 use ABC\Handler\RequestRouter;
+use ABC\Util\Dictionary;
 use ABC\Util\RouteCollection;
 use LogicException;
 use Nyholm\Psr7\Response;
@@ -111,7 +112,7 @@ final class RequestRouterTest extends TestCase
         self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER));
         self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER));
 
-        $response = (new RequestRouter($this->container, $routes))
+        $response = (new RequestRouter($this->container, $routes, new Dictionary))
             ->handle(new ServerRequest('GET', '/hello/abc'));
 
         self::assertTrue($this->container->resolved('hello_handler'));
@@ -131,7 +132,7 @@ final class RequestRouterTest extends TestCase
         self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER));
         self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER));
 
-        $response = (new RequestRouter($this->container, $routes))
+        $response = (new RequestRouter($this->container, $routes, new Dictionary))
             ->handle(new ServerRequest('GET', '/bye/abc'));
 
         self::assertFalse($this->container->resolved('bogus_handler'));
@@ -153,7 +154,7 @@ final class RequestRouterTest extends TestCase
         self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER));
         self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER));
 
-        $response = (new RequestRouter($this->container, $routes))
+        $response = (new RequestRouter($this->container, $routes, new Dictionary))
             ->handle(new ServerRequest('DELETE', '/hello/abc'));
 
         self::assertFalse($this->container->resolved('hello_handler'));
@@ -173,7 +174,7 @@ final class RequestRouterTest extends TestCase
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
-        (new RequestRouter(new Container, $routes))
+        (new RequestRouter(new Container, $routes, new Dictionary))
             ->handle(new ServerRequest('GET', '/bye/abc'));
     }
 
@@ -185,7 +186,7 @@ final class RequestRouterTest extends TestCase
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
         $routes->addRoute('POST', '/hello/{name}', 'hello_handler');
 
-        (new RequestRouter(new Container, $routes))
+        (new RequestRouter(new Container, $routes, new Dictionary))
             ->handle(new ServerRequest('DELETE', '/hello/abc'));
     }
 
@@ -198,7 +199,7 @@ final class RequestRouterTest extends TestCase
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
-        (new RequestRouter($this->container, $routes))
+        (new RequestRouter($this->container, $routes, new Dictionary))
             ->handle(new ServerRequest('GET', '/bye/abc'));
     }
 
@@ -211,7 +212,7 @@ final class RequestRouterTest extends TestCase
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
-        (new RequestRouter($this->container, $routes))
+        (new RequestRouter($this->container, $routes, new Dictionary))
             ->handle(new ServerRequest('DELETE', '/hello/abc'));
     }
 }
