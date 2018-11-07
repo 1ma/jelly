@@ -11,7 +11,7 @@ namespace ABC\Util;
  *
  * @internal
  */
-class Dictionary
+final class Dictionary
 {
     /**
      * Map of handlers and their tags
