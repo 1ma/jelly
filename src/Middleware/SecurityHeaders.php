@@ -21,15 +21,9 @@ final class SecurityHeaders implements Server\MiddlewareInterface
      */
     private $maxAge;
 
-    /**
-     * @var string|null
-     */
-    private $serverName;
-
-    public function __construct(int $maxAge = 30, string $serverName = null)
+    public function __construct(int $maxAge = 30)
     {
         $this->maxAge = $maxAge;
-        $this->serverName = $serverName;
     }
 
     /**
@@ -37,15 +31,7 @@ final class SecurityHeaders implements Server\MiddlewareInterface
      */
     public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
     {
-        \header_remove('X-Powered-By');
-
-        $response = $handler->handle($request);
-
-        if (null !== $this->serverName) {
-            $response = $response->withHeader('Server', $this->serverName);
-        }
-
-        return $response
+        return $handler->handle($request)
             ->withHeader('Expect-CT', \sprintf('enforce,max-age=%s', $this->maxAge))
             ->withHeader('Strict-Transport-Security', \sprintf('max-age=%s', $this->maxAge))
             ->withHeader('X-Content-Type-Options', 'nosniff')
