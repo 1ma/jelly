@@ -6,6 +6,8 @@ namespace ABC\Tests\Middleware;
 
 use ABC\Constants;
 use ABC\Middleware\ExceptionTrapper;
+use ABC\Tests\Fixture\BrokenHandler;
+use ABC\Tests\Fixture\SuccessfulHandler;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -45,7 +47,7 @@ final class ExceptionTrapperTest extends TestCase
 
                     $this->phpunit::assertSame(500, $errorType);
                     $this->phpunit::assertInstanceOf(Throwable::class, $exception);
-                    $this->phpunit::assertSame('Whoops', $exception->getMessage());
+                    $this->phpunit::assertSame('Whoops!', $exception->getMessage());
 
                     return new Response($errorType, [], 'All is lost!');
                 }
@@ -57,16 +59,11 @@ final class ExceptionTrapperTest extends TestCase
     {
         $response = (new ExceptionTrapper($this->container))->process(
             new ServerRequest('GET', '/'),
-            new class implements RequestHandlerInterface {
-                public function handle(ServerRequestInterface $request): ResponseInterface
-                {
-                    return new Response(200, [], 'Everything is fine');
-                }
-            }
+            new SuccessfulHandler
         );
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertSame('Everything is fine', (string) $response->getBody());
+        self::assertSame('Hello.', (string) $response->getBody());
         self::assertFalse($this->container->resolved(Constants::EXCEPTION_HANDLER));
     }
 
@@ -74,12 +71,7 @@ final class ExceptionTrapperTest extends TestCase
     {
         $response = (new ExceptionTrapper($this->container))->process(
             new ServerRequest('GET', '/'),
-            new class implements RequestHandlerInterface {
-                public function handle(ServerRequestInterface $request): ResponseInterface
-                {
-                    throw new \RuntimeException('Whoops');
-                }
-            }
+            new BrokenHandler
         );
 
         self::assertSame(500, $response->getStatusCode());
@@ -93,12 +85,7 @@ final class ExceptionTrapperTest extends TestCase
 
         (new ExceptionTrapper(new Container))->process(
             new ServerRequest('GET', '/'),
-            new class implements RequestHandlerInterface {
-                public function handle(ServerRequestInterface $request): ResponseInterface
-                {
-                    throw new \RuntimeException('Whoops');
-                }
-            }
+            new BrokenHandler
         );
     }
 
@@ -110,12 +97,7 @@ final class ExceptionTrapperTest extends TestCase
 
         (new ExceptionTrapper($this->container))->process(
             new ServerRequest('GET', '/'),
-            new class implements RequestHandlerInterface {
-                public function handle(ServerRequestInterface $request): ResponseInterface
-                {
-                    throw new \RuntimeException('Whoops');
-                }
-            }
+            new BrokenHandler
         );
     }
 }

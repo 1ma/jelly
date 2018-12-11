@@ -8,6 +8,9 @@ use ABC\Constants;
 use ABC\Handler;
 use ABC\Kernel;
 use ABC\Middleware\SecurityHeaders;
+use ABC\Middleware\ServerCloak;
+use ABC\Tests\Fixture\SuccessfulHandler;
+use ABC\Tests\Fixture\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -39,20 +42,8 @@ final class KernelTest extends TestCase
             Constants::NOT_FOUND_HANDLER => new Handler\EmptyResponse($factory, 404),
             Constants::BAD_METHOD_HANDLER => new Handler\MethodNotAllowed($factory),
             Constants::EXCEPTION_HANDLER => new Handler\DebugException($factory, $factory),
-            'index' => new class implements RequestHandlerInterface
-            {
-                public function handle(ServerRequestInterface $request): ResponseInterface
-                {
-                    return new Response(200, ['Content-Type' => 'text/plain'], 'Hello.');
-                }
-            },
-            'boom' => new class implements RequestHandlerInterface
-            {
-                public function handle(ServerRequestInterface $request): ResponseInterface
-                {
-                    throw new RuntimeException('Something went rekt.');
-                }
-            }
+            'index' => new SuccessfulHandler,
+            'boom' => new BrokenHandler
         ]);
 
         $this->kernel = new Kernel($this->container);
@@ -105,7 +96,7 @@ final class KernelTest extends TestCase
             $this->kernel->handle(new ServerRequest('GET', '/')),
             500,
             ['Content-Type' => ['text/plain']],
-            'Something went rekt.', false
+            'Whoops!', false
         );
 
         $this->container->set(Constants::EXCEPTION_HANDLER, new Handler\EmptyResponse(new Psr17Factory, 503));
@@ -133,6 +124,25 @@ final class KernelTest extends TestCase
                 'X-Content-Type-Options' => ['nosniff'],
                 'X-Frame-Options' => ['DENY'],
                 'X-XSS-Protection' => ['1; mode=block']
+            ],
+            'Hello.'
+        );
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testServerCloakMiddleware(): void
+    {
+        $this->kernel->get('/', 'index');
+        $this->kernel->decorate(new ServerCloak('api.example.com'));
+
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('GET', '/')),
+            200,
+            [
+                'Content-Type' => ['text/plain'],
+                'Server' => ['api.example.com']
             ],
             'Hello.'
         );

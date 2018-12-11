@@ -29,12 +29,6 @@ final class ServerCloak implements Server\MiddlewareInterface
      */
     public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
     {
-        // Headers cannot be added nor removed from
-        // the response if they have already been sent.
-        if(\headers_sent()) {
-            return $handler->handle($request);
-        }
-
         \header_remove('X-Powered-By');
 
         return $handler->handle($request)
