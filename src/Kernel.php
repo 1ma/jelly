@@ -19,11 +19,6 @@ class Kernel implements Server\RequestHandlerInterface
     protected $container;
 
     /**
-     * @var Util\RouteCollection
-     */
-    private $routes;
-
-    /**
      * @var Server\MiddlewareInterface[]
      */
     private $decorators;
@@ -32,6 +27,11 @@ class Kernel implements Server\RequestHandlerInterface
      * @var Util\Dictionary
      */
     private $dictionary;
+
+    /**
+     * @var Util\RouteCollection
+     */
+    private $routes;
 
     /**
      * @throws Container\NotFoundExceptionInterface
@@ -44,8 +44,8 @@ class Kernel implements Server\RequestHandlerInterface
 
         $this->container = $container;
         $this->decorators = [];
-        $this->routes = new Util\RouteCollection;
         $this->dictionary = new Util\Dictionary;
+        $this->routes = new Util\RouteCollection;
     }
 
     /**
