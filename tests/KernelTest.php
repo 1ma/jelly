@@ -10,10 +10,12 @@ use ABC\Kernel;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
+use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 use UMA\DIC\Container;
 
 final class KernelTest extends TestCase
@@ -35,7 +37,21 @@ final class KernelTest extends TestCase
         $this->container = new Container([
             Constants::NOT_FOUND_HANDLER => new Handler\EmptyResponse($factory, 404),
             Constants::BAD_METHOD_HANDLER => new Handler\MethodNotAllowed($factory),
-            Constants::EXCEPTION_HANDLER => new Handler\DebugException($factory, $factory)
+            Constants::EXCEPTION_HANDLER => new Handler\DebugException($factory, $factory),
+            'index' => new class implements RequestHandlerInterface
+            {
+                public function handle(ServerRequestInterface $request): ResponseInterface
+                {
+                    return new Response(200, ['Content-Type' => 'text/plain'], 'Hello.');
+                }
+            },
+            'boom' => new class implements RequestHandlerInterface
+            {
+                public function handle(ServerRequestInterface $request): ResponseInterface
+                {
+                    throw new RuntimeException('Something went rekt.');
+                }
+            }
         ]);
 
         $this->kernel = new Kernel($this->container);
@@ -43,19 +59,80 @@ final class KernelTest extends TestCase
 
     public function testHappyPath(): void
     {
-        $this->container->set('index', new class implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return new Response(200, ['Content-Type' => 'text/plain'], 'Hello.');
-            }
-        });
-
         $this->kernel->get('/', 'index');
 
-        $response = $this->kernel->handle(new ServerRequest('GET', '/'));
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('GET', '/')),
+            200,
+            ['Content-Type' => ['text/plain']],
+            'Hello.'
+        );
+    }
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertSame(['Content-Type' => ['text/plain']], $response->getHeaders());
-        self::assertSame('Hello.', (string) $response->getBody());
+    public function testNotFound(): void
+    {
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('GET', '/')),
+            404,
+            [],
+            ''
+        );
+    }
+
+    public function testBadMethod(): void
+    {
+        $this->kernel->get('/', 'index');
+        $this->kernel->post('/', 'index');
+        $this->kernel->put('/', 'index');
+        $this->kernel->update('/', 'index');
+        $this->kernel->delete('/', 'index');
+        $this->kernel->map('OPTIONS', '/', 'index');
+
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('PATCH', '/')),
+            405,
+            ['Allow' => ['GET, POST, PUT, UPDATE, DELETE, OPTIONS']],
+            ''
+        );
+    }
+
+    public function testExceptionHandler(): void
+    {
+        $this->kernel->get('/', 'boom');
+
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('GET', '/')),
+            500,
+            ['Content-Type' => ['text/plain']],
+            'Something went rekt.', false
+        );
+
+        $this->container->set(Constants::EXCEPTION_HANDLER, new Handler\EmptyResponse(new Psr17Factory, 503));
+
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('GET', '/')),
+            503,
+            [],
+            ''
+        );
+    }
+
+    /**
+     * @throws ExpectationFailedException
+     */
+    private static function assertExpectedResponse(
+        ResponseInterface $response,
+        int $expectedStatusCode,
+        array $expectedHeaders,
+        string $expectedBody,
+        bool $exactMatch = true
+    ): void
+    {
+        self::assertSame($expectedStatusCode, $response->getStatusCode());
+        self::assertSame($expectedHeaders, $response->getHeaders());
+
+        $exactMatch ?
+            self::assertSame($expectedBody, (string)$response->getBody()) :
+            self::assertStringContainsString($expectedBody, (string)$response->getBody());
     }
 }

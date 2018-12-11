@@ -31,6 +31,7 @@ final class RequestRouterTest extends TestCase
         $this->container = new Container;
 
         $this->container->set(self::class, $this);
+
         $this->container->set('hello_handler', function(Container $c): RequestHandlerInterface {
             return new class($c->get(self::class)) implements RequestHandlerInterface {
                 private $phpunit;
@@ -52,6 +53,7 @@ final class RequestRouterTest extends TestCase
                 }
             };
         });
+
         $this->container->set('bogus_handler', function(): RequestHandlerInterface {
             return new class implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
@@ -60,6 +62,7 @@ final class RequestRouterTest extends TestCase
                 }
             };
         });
+
         $this->container->set(Constants::NOT_FOUND_HANDLER, function(Container $c): RequestHandlerInterface {
             return new class($c->get(self::class)) implements RequestHandlerInterface {
                 private $phpunit;
@@ -79,6 +82,7 @@ final class RequestRouterTest extends TestCase
                 }
             };
         });
+
         $this->container->set(Constants::BAD_METHOD_HANDLER, function(Container $c): RequestHandlerInterface {
             return new class($c->get(self::class)) implements RequestHandlerInterface {
                 private $phpunit;
