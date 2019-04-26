@@ -10,6 +10,7 @@ use ABC\Util;
 use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
+use Webmozart\Assert\Assert;
 
 class Kernel implements Server\RequestHandlerInterface
 {
@@ -33,14 +34,11 @@ class Kernel implements Server\RequestHandlerInterface
      */
     private $routes;
 
-    /**
-     * @throws Container\NotFoundExceptionInterface
-     */
     public function __construct(Container\ContainerInterface $container)
     {
-        Util\Assert::hasService($container, Constants::NOT_FOUND_HANDLER);
-        Util\Assert::hasService($container, Constants::BAD_METHOD_HANDLER);
-        Util\Assert::hasService($container, Constants::EXCEPTION_HANDLER);
+        Assert::true($container->has(Constants::NOT_FOUND_HANDLER), '"Not Found" handler service missing');
+        Assert::true($container->has(Constants::BAD_METHOD_HANDLER), '"Bad Method" handler service missing');
+        Assert::true($container->has(Constants::EXCEPTION_HANDLER), 'Exception handler service missing');
 
         $this->container = $container;
         $this->decorators = [];
@@ -93,7 +91,7 @@ class Kernel implements Server\RequestHandlerInterface
      */
     public function map(string $method, string $pattern, string $service, array $extraTags = []): void
     {
-        Util\Assert::hasService($this->container, $service);
+        Assert::true($this->container->has($service), '%s is not registered as a service');
 
         $this->routes->addRoute($method, $pattern, $service);
 
@@ -108,7 +106,7 @@ class Kernel implements Server\RequestHandlerInterface
      */
     public function add(string $tag, string $middleware)
     {
-        Util\Assert::hasService($this->container, $middleware);
+        Assert::true($this->container->has($middleware), '%s is not registered as a service');
 
         $this->dictionary->push($tag, $middleware);
     }

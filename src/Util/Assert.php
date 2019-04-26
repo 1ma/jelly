@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ABC\Util;
 
-use LogicException;
-use Psr\Container;
 use Psr\Http\Server;
 use TypeError;
 
@@ -14,25 +12,6 @@ use TypeError;
  */
 final class Assert
 {
-    /**
-     * This assertion throws a canonical PSR-11 NotFoundExceptionInterface without
-     * actually retrieving (i.e. instantiating) the service from the container.
-     *
-     * If this exception is thrown it means a mandatory service is missing and this
-     * must lead to a fix in the application bootstrapping (hence the base
-     * exception is a LogicException).
-     *
-     * @throws Container\NotFoundExceptionInterface
-     */
-    public static function hasService(Container\ContainerInterface $container, string $service): void
-    {
-        if (!$container->has($service)) {
-            throw new class
-                extends LogicException
-                implements Container\NotFoundExceptionInterface {};
-        }
-    }
-
     /**
      * The purpose of this assertion is passing it "mystery objects" retrieved
      * from the container to make sure that they are RequestHandlerInterfaces.
