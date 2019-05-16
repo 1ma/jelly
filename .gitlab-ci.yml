@@ -1,0 +1,33 @@
+stages:
+  - testing
+
+test-php-7.2:
+  stage: testing
+  image: 1maa/php-dev:7.2
+  script:
+    - php -v
+    - php -m
+    - composer install
+    - php vendor/bin/phpunit
+
+test-php-7.3:
+  stage: testing
+  image: 1maa/php-dev:7.3
+  script:
+    - php -v
+    - php -m
+    - composer install
+    - php vendor/bin/phpunit
+
+metrics:
+  stage: testing
+  image: 1maa/php-dev:7.3
+  script:
+    - composer install
+    - php vendor/bin/phpunit
+    - php vendor/bin/phpmetrics  --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .
+  artifacts:
+    paths:
+      - build/phpunit/
+      - build/phpmetrics/
+    expire_in: 1 day
