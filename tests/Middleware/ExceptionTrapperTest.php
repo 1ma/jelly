@@ -26,7 +26,7 @@ final class ExceptionTrapperTest extends TestCase
      */
     private $container;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = new Container;
 

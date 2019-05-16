@@ -26,7 +26,7 @@ final class RequestRouterTest extends TestCase
      */
     private $container;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = new Container;
 
@@ -98,7 +98,7 @@ final class RequestRouterTest extends TestCase
                     $allowedMethods = $request->getAttribute(Constants::ALLOWED_METHODS);
 
                     $this->phpunit::assertSame(405, $errorType);
-                    $this->phpunit::assertInternalType('array', $allowedMethods);
+                    $this->phpunit::assertIsArray($allowedMethods);
                     $this->phpunit::assertNotEmpty($allowedMethods);
 
                     return new Response($errorType, ['Allow' => \implode(', ', $allowedMethods)]);

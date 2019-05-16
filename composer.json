@@ -15,7 +15,7 @@
     "require-dev": {
         "nyholm/psr7": "^1.0",
         "phpmetrics/phpmetrics": "^2.4",
-        "phpunit/phpunit": "^7.4",
+        "phpunit/phpunit": "^8.0",
         "roave/security-advisories": "dev-master",
         "uma/dic": "^1.0"
     },

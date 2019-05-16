@@ -34,7 +34,7 @@ final class KernelTest extends TestCase
      */
     private $kernel;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $factory = new Psr17Factory();
 
