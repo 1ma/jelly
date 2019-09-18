@@ -51,7 +51,7 @@ final class KernelTest extends TestCase
 
     public function testHappyPath(): void
     {
-        $this->kernel->get('/', 'index');
+        $this->kernel->GET('/', 'index');
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/')),
@@ -73,11 +73,11 @@ final class KernelTest extends TestCase
 
     public function testBadMethod(): void
     {
-        $this->kernel->get('/', 'index');
-        $this->kernel->post('/', 'index');
-        $this->kernel->put('/', 'index');
-        $this->kernel->update('/', 'index');
-        $this->kernel->delete('/', 'index');
+        $this->kernel->GET('/', 'index');
+        $this->kernel->POST('/', 'index');
+        $this->kernel->PUT('/', 'index');
+        $this->kernel->UPDATE('/', 'index');
+        $this->kernel->DELETE('/', 'index');
         $this->kernel->map('OPTIONS', '/', 'index');
 
         self::assertExpectedResponse(
@@ -90,7 +90,7 @@ final class KernelTest extends TestCase
 
     public function testExceptionHandler(): void
     {
-        $this->kernel->get('/', 'boom');
+        $this->kernel->GET('/', 'boom');
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/')),
@@ -111,7 +111,7 @@ final class KernelTest extends TestCase
 
     public function testKernelDecoration(): void
     {
-        $this->kernel->get('/', 'index');
+        $this->kernel->GET('/', 'index');
         $this->kernel->decorate(new SecurityHeaders);
 
         self::assertExpectedResponse(
@@ -134,7 +134,7 @@ final class KernelTest extends TestCase
      */
     public function testServerCloakMiddleware(): void
     {
-        $this->kernel->get('/', 'index');
+        $this->kernel->GET('/', 'index');
         $this->kernel->decorate(new ServerCloak('api.example.com'));
 
         self::assertExpectedResponse(
@@ -150,7 +150,7 @@ final class KernelTest extends TestCase
 
     public function testTagsAndMiddlewares(): void
     {
-        $this->kernel->get('/', 'index', ['foo']);
+        $this->kernel->GET('/', 'index', ['foo']);
         $this->container->set(SecurityHeaders::class, new SecurityHeaders);
         $this->kernel->add('foo', SecurityHeaders::class);
 

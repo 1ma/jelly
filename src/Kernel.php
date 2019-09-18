@@ -49,7 +49,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function get(string $pattern, string $service, array $extraTags = []): void
+    public function GET(string $pattern, string $service, array $extraTags = []): void
     {
         $this->map('GET', $pattern, $service, $extraTags);
     }
@@ -57,7 +57,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function post(string $pattern, string $service, array $extraTags = []): void
+    public function POST(string $pattern, string $service, array $extraTags = []): void
     {
         $this->map('POST', $pattern, $service, $extraTags);
     }
@@ -65,7 +65,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function put(string $pattern, string $service, array $extraTags = []): void
+    public function PUT(string $pattern, string $service, array $extraTags = []): void
     {
         $this->map('PUT', $pattern, $service, $extraTags);
     }
@@ -73,7 +73,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function update(string $pattern, string $service, array $extraTags = []): void
+    public function UPDATE(string $pattern, string $service, array $extraTags = []): void
     {
         $this->map('UPDATE', $pattern, $service, $extraTags);
     }
@@ -81,7 +81,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function delete(string $pattern, string $service, array $extraTags = []): void
+    public function DELETE(string $pattern, string $service, array $extraTags = []): void
     {
         $this->map('DELETE', $pattern, $service, $extraTags);
     }
