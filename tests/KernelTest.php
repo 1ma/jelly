@@ -12,14 +12,10 @@ use ABC\Middleware\ServerCloak;
 use ABC\Tests\Fixture\SuccessfulHandler;
 use ABC\Tests\Fixture\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 use UMA\DIC\Container;
 
 final class KernelTest extends TestCase
