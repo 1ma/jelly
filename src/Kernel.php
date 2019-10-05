@@ -104,7 +104,7 @@ class Kernel implements Server\RequestHandlerInterface
     /**
      * Bind a $middleware (a service name) to the given $tag.
      */
-    public function add(string $tag, string $middleware)
+    public function add(string $tag, string $middleware): void
     {
         Assert::true($this->container->has($middleware), '%s is not registered as a service');
 

@@ -16,7 +16,7 @@ use Psr\Http\Server;
 final class EmptyResponse implements Server\RequestHandlerInterface
 {
     /**
-     * @var Message\ResponseInterface
+     * @var Message\ResponseFactoryInterface
      */
     private $factory;
 
