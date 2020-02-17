@@ -25,11 +25,6 @@ class Kernel implements Server\RequestHandlerInterface
     private $decorators;
 
     /**
-     * @var Util\Dictionary
-     */
-    private $dictionary;
-
-    /**
      * @var Util\RouteCollection
      */
     private $routes;
@@ -42,73 +37,57 @@ class Kernel implements Server\RequestHandlerInterface
 
         $this->container = $container;
         $this->decorators = [];
-        $this->dictionary = new Util\Dictionary;
         $this->routes = new Util\RouteCollection;
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function GET(string $pattern, string $service, array $extraTags = []): void
+    public function GET(string $pattern, string $service): void
     {
-        $this->map('GET', $pattern, $service, $extraTags);
+        $this->map('GET', $pattern, $service);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function POST(string $pattern, string $service, array $extraTags = []): void
+    public function POST(string $pattern, string $service): void
     {
-        $this->map('POST', $pattern, $service, $extraTags);
+        $this->map('POST', $pattern, $service);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function PUT(string $pattern, string $service, array $extraTags = []): void
+    public function PUT(string $pattern, string $service): void
     {
-        $this->map('PUT', $pattern, $service, $extraTags);
+        $this->map('PUT', $pattern, $service);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function UPDATE(string $pattern, string $service, array $extraTags = []): void
+    public function UPDATE(string $pattern, string $service): void
     {
-        $this->map('UPDATE', $pattern, $service, $extraTags);
+        $this->map('UPDATE', $pattern, $service);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function DELETE(string $pattern, string $service, array $extraTags = []): void
+    public function DELETE(string $pattern, string $service): void
     {
-        $this->map('DELETE', $pattern, $service, $extraTags);
+        $this->map('DELETE', $pattern, $service);
     }
 
     /**
      * @throws Container\NotFoundExceptionInterface
      */
-    public function map(string $method, string $pattern, string $service, array $extraTags = []): void
+    public function map(string $method, string $pattern, string $service): void
     {
         Assert::true($this->container->has($service), '%s is not registered as a service');
 
         $this->routes->addRoute($method, $pattern, $service);
-
-        $this->dictionary->tag($service, $service);
-        foreach ($extraTags as $extraTag) {
-            $this->dictionary->tag($service, $extraTag);
-        }
-    }
-
-    /**
-     * Bind a $middleware (a service name) to the given $tag.
-     */
-    public function add(string $tag, string $middleware): void
-    {
-        Assert::true($this->container->has($middleware), '%s is not registered as a service');
-
-        $this->dictionary->push($tag, $middleware);
     }
 
     /**
@@ -127,8 +106,7 @@ class Kernel implements Server\RequestHandlerInterface
         return Handler\MiddlewareStack::compose(
             new Handler\RequestRouter(
                 $this->container,
-                $this->routes,
-                $this->dictionary
+                $this->routes
             ),
             new Middleware\ExceptionTrapper(
                 $this->container

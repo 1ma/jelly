@@ -144,27 +144,6 @@ final class KernelTest extends TestCase
         );
     }
 
-    public function testTagsAndMiddlewares(): void
-    {
-        $this->kernel->GET('/', 'index', ['foo']);
-        $this->container->set(SecurityHeaders::class, new SecurityHeaders);
-        $this->kernel->add('foo', SecurityHeaders::class);
-
-        self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
-            200,
-            [
-                'Content-Type' => ['text/plain'],
-                'Expect-CT' => ['enforce,max-age=30'],
-                'Strict-Transport-Security' => ['max-age=30'],
-                'X-Content-Type-Options' => ['nosniff'],
-                'X-Frame-Options' => ['DENY'],
-                'X-XSS-Protection' => ['1; mode=block']
-            ],
-            'Hello.'
-        );
-    }
-
     /**
      * @throws ExpectationFailedException
      */
