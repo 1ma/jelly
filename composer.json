@@ -1,9 +1,10 @@
 {
     "name": "abc/kernel",
     "description": "ABC framework kernel",
+    "type": "library",
     "license": "MIT",
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.3",
         "nikic/fast-route": "^1.3",
         "psr/container": "^1.0",
         "psr/http-factory": "^1.0",
@@ -15,7 +16,7 @@
     "require-dev": {
         "nyholm/psr7": "^1.0",
         "phpmetrics/phpmetrics": "^2.4",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "^9.0",
         "uma/dic": "^1.0"
     },
     "autoload": {
