@@ -12,6 +12,15 @@ use Psr\Http\Message;
 final class FastCGIEchoer
 {
     /**
+     * The response is emitted in chunks of at most 8MB at a time.
+     *
+     * This is to avoid exhausting the memory available to the PHP process.
+     * By default the memory_limit INI directive is 128MB so 8MB should be
+     * low enough in virtually all cases.
+     */
+    private const CHUNK_SIZE = 8 * 1024 * 1024;
+
+    /**
      * Echoes any PSR7-compatible Response back to a FastCGI client
      * according to the RFC 7230 HTTP Message Format specification.
      *
@@ -34,6 +43,13 @@ final class FastCGIEchoer
             ));
         }
 
-        echo (string) $response->getBody();
+        $stream = $response->getBody();
+        $stream->rewind();
+
+        while ('' !== $chunk = $stream->read(self::CHUNK_SIZE)) {
+            echo $chunk;
+        }
+
+        $stream->close();
     }
 }
