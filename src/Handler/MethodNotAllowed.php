@@ -7,6 +7,7 @@ namespace ABC\Handler;
 use ABC\Constants;
 use Psr\Http\Message;
 use Psr\Http\Server;
+use function implode;
 
 /**
  * ABC's default handler for HTTP 405 errors.
@@ -28,6 +29,6 @@ final class MethodNotAllowed implements Server\RequestHandlerInterface
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
         return $this->factory->createResponse(405)
-            ->withHeader('Allow', \implode(', ', $request->getAttribute(Constants::ALLOWED_METHODS)));
+            ->withHeader('Allow', implode(', ', $request->getAttribute(Constants::ALLOWED_METHODS)));
     }
 }

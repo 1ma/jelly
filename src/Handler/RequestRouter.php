@@ -11,6 +11,7 @@ use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use TypeError;
+use function assert;
 
 final class RequestRouter implements Server\RequestHandlerInterface
 {
@@ -64,7 +65,7 @@ final class RequestRouter implements Server\RequestHandlerInterface
                 ->withAttribute(Constants::ALLOWED_METHODS, $routeInfo[1]);
         }
 
-        \assert(isset($handler, $request));
+        assert(isset($handler));
 
         return $handler->handle($request);
     }

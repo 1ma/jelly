@@ -7,6 +7,9 @@ namespace ABC\Handler;
 use ABC\Constants;
 use Psr\Http\Message;
 use Psr\Http\Server;
+use Throwable;
+use function get_class;
+use function sprintf;
 
 /**
  * ABC's default handler for debugging uncaught exceptions during development.
@@ -34,12 +37,12 @@ final class DebugException implements Server\RequestHandlerInterface
 
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        /** @var \Throwable $exception */
+        /** @var Throwable $exception */
         $exception = $request->getAttribute(Constants::EXCEPTION);
 
-        $body = \sprintf(
+        $body = sprintf(
             "Exception Type: %s\nMessage: %s\nStack Trace:\n#! %s(%s)\n%s\n",
-            \get_class($exception),
+            get_class($exception),
             $exception->getMessage(),
             $exception->getFile(), $exception->getLine(),
             $exception->getTraceAsString()

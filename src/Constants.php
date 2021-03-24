@@ -10,19 +10,19 @@ final class Constants
      * This is a service name that the framework expects to map to a RequestHandlerInterface
      * that will handle Not Found (HTTP 404) errors.
      */
-    const NOT_FOUND_HANDLER = 'abc.404';
+    public const NOT_FOUND_HANDLER = 'abc.404';
 
     /**
      * This is a service name that the framework expects to map to a RequestHandlerInterface
      * that will handle Method Not Allowed (HTTP 405) errors.
      */
-    const BAD_METHOD_HANDLER = 'abc.405';
+    public const BAD_METHOD_HANDLER = 'abc.405';
 
     /**
      * This is a service name that the framework expects to map to a RequestHandlerInterface
      * that will handle any uncaught exceptions thrown by the application.
      */
-    const EXCEPTION_HANDLER = 'abc.500';
+    public const EXCEPTION_HANDLER = 'abc.500';
 
     /**
      * If an uncaught exception is captured, a Method Not Found error occurs, or a
@@ -31,7 +31,7 @@ final class Constants
      *
      * It will either be 500, 405 or 404 respectively.
      */
-    const ERROR_TYPE = 'abc.error';
+    public const ERROR_TYPE = 'abc.error';
 
     /**
      * If a Method Not Allowed error occurs, the framework will attach the list of valid
@@ -41,7 +41,7 @@ final class Constants
      * can rely on the fact that the incoming request will have this attribute, and its
      * value will always be a non-empty array of strings, such as ['GET', 'PUT', 'DELETE'].
      */
-    const ALLOWED_METHODS = 'abc.allowed_methods';
+    public const ALLOWED_METHODS = 'abc.allowed_methods';
 
     /**
      * If the framework captures an uncaught exception it will be attached to the request
@@ -51,7 +51,7 @@ final class Constants
      * can rely on the fact that the incoming request will have this attribute, and its
      * value will always be an exception.
      */
-    const EXCEPTION = 'abc.exception';
+    public const EXCEPTION = 'abc.exception';
 
     /**
      * On every successfully routed request, the framework will attach its arguments
@@ -60,11 +60,11 @@ final class Constants
      * Arguments are the named placeholders that can be defined in FastRoute's
      * path declarations, such as '/hello/{name}'.
      */
-    const ARGS = 'abc.args';
+    public const ARGS = 'abc.args';
 
     /**
      * On every successfully routed request, the framework will attach the service
      * name of the designed request handler under this attribute key.
      */
-    const HANDLER = 'abc.handler';
+    public const HANDLER = 'abc.handler';
 }
