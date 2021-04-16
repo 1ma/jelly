@@ -13,6 +13,7 @@ use Psr\Http\Server;
  * @see https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software
  * @see https://security.stackexchange.com/a/147559/70983
  * @see https://www.owasp.org/index.php/REST_Security_Cheat_Sheet
+ * @see https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
  */
 final class SecurityHeaders implements Server\MiddlewareInterface
 {
@@ -33,6 +34,7 @@ final class SecurityHeaders implements Server\MiddlewareInterface
     {
         return $handler->handle($request)
             ->withHeader('Expect-CT', \sprintf('enforce,max-age=%s', $this->maxAge))
+            ->withHeader('Permissions-Policy', 'interest-cohort=()')
             ->withHeader('Strict-Transport-Security', \sprintf('max-age=%s', $this->maxAge))
             ->withHeader('X-Content-Type-Options', 'nosniff')
             ->withHeader('X-Frame-Options', 'DENY')

@@ -116,6 +116,7 @@ final class KernelTest extends TestCase
             [
                 'Content-Type' => ['text/plain'],
                 'Expect-CT' => ['enforce,max-age=30'],
+                'Permissions-Policy' => ['interest-cohort=()'],
                 'Strict-Transport-Security' => ['max-age=30'],
                 'X-Content-Type-Options' => ['nosniff'],
                 'X-Frame-Options' => ['DENY'],
