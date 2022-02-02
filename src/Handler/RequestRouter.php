@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace ABC\Handler;
 
 use ABC\Constants;
-use ABC\Util\Assert;
+use ABC\Util;
 use FastRoute;
 use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use TypeError;
-use function assert;
 
 final class RequestRouter implements Server\RequestHandlerInterface
 {
@@ -39,26 +38,26 @@ final class RequestRouter implements Server\RequestHandlerInterface
         );
 
         if (FastRoute\Dispatcher::FOUND === $routeInfo[0]) {
-            $handler = Assert::isARequestHandler($this->container->get($routeInfo[1]));
+            $handler = Util\Assert::isARequestHandler($this->container->get($routeInfo[1]));
             $request = $request
                 ->withAttribute(Constants::HANDLER, $routeInfo[1])
                 ->withAttribute(Constants::ARGS, $routeInfo[2]);
         }
 
         if (FastRoute\Dispatcher::NOT_FOUND === $routeInfo[0]) {
-            $handler = Assert::isARequestHandler($this->container->get(Constants::NOT_FOUND_HANDLER));
+            $handler = Util\Assert::isARequestHandler($this->container->get(Constants::NOT_FOUND_HANDLER));
             $request = $request
                 ->withAttribute(Constants::ERROR_TYPE, 404);
         }
 
         if (FastRoute\Dispatcher::METHOD_NOT_ALLOWED === $routeInfo[0]) {
-            $handler = Assert::isARequestHandler($this->container->get(Constants::BAD_METHOD_HANDLER));
+            $handler = Util\Assert::isARequestHandler($this->container->get(Constants::BAD_METHOD_HANDLER));
             $request = $request
                 ->withAttribute(Constants::ERROR_TYPE, 405)
                 ->withAttribute(Constants::ALLOWED_METHODS, $routeInfo[1]);
         }
 
-        assert(isset($handler));
+        Util\Assert::true(isset($handler));
 
         return $handler->handle($request);
     }

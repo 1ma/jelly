@@ -7,11 +7,11 @@ namespace ABC;
 use ABC\Handler;
 use ABC\Middleware;
 use ABC\Util;
+use InvalidArgumentException;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
-use Psr\Container;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
 use Psr\Http\Server;
-use Webmozart\Assert\Assert;
 
 final class Kernel implements Server\RequestHandlerInterface
 {
@@ -20,19 +20,19 @@ final class Kernel implements Server\RequestHandlerInterface
      */
     private array $middlewares;
     private readonly Util\RouteCollection $routes;
-    private readonly Container\ContainerInterface $container;
+    private readonly ContainerInterface $container;
     private readonly ServerRequestCreatorInterface $creator;
     private readonly Output $output;
 
     public function __construct(
-        Container\ContainerInterface $container,
+        ContainerInterface $container,
         ServerRequestCreatorInterface $creator,
         Output $output = new Output\FastCGI()
     )
     {
-        Assert::true($container->has(Constants::NOT_FOUND_HANDLER), '"Not Found" handler service missing');
-        Assert::true($container->has(Constants::BAD_METHOD_HANDLER), '"Bad Method" handler service missing');
-        Assert::true($container->has(Constants::EXCEPTION_HANDLER), 'Exception handler service missing');
+        Util\Assert::true($container->has(Constants::NOT_FOUND_HANDLER), '"Not Found" handler service missing');
+        Util\Assert::true($container->has(Constants::BAD_METHOD_HANDLER), '"Bad Method" handler service missing');
+        Util\Assert::true($container->has(Constants::EXCEPTION_HANDLER), 'Exception handler service missing');
 
         $this->middlewares = [];
         $this->routes = new Util\RouteCollection;
@@ -42,7 +42,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * @throws InvalidArgumentException If the container does not have $service
      */
     public function GET(string $pattern, string $service): void
     {
@@ -50,7 +50,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * @throws InvalidArgumentException If the container does not have $service
      */
     public function POST(string $pattern, string $service): void
     {
@@ -58,7 +58,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * @throws InvalidArgumentException If the container does not have $service
      */
     public function PUT(string $pattern, string $service): void
     {
@@ -66,7 +66,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * @throws InvalidArgumentException If the container does not have $service
      */
     public function UPDATE(string $pattern, string $service): void
     {
@@ -74,7 +74,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * @throws InvalidArgumentException If the container does not have $service
      */
     public function DELETE(string $pattern, string $service): void
     {
@@ -82,11 +82,11 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws Container\NotFoundExceptionInterface
+     * @throws InvalidArgumentException If the container does not have $service
      */
     public function map(string $method, string $pattern, string $service): void
     {
-        Assert::true($this->container->has($service), '%s is not registered as a service');
+        Util\Assert::true($this->container->has($service), '%s is not registered as a service');
 
         $this->routes->addRoute($method, $pattern, $service);
     }

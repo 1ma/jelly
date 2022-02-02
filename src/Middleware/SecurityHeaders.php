@@ -6,6 +6,7 @@ namespace ABC\Middleware;
 
 use Psr\Http\Message;
 use Psr\Http\Server;
+use function sprintf;
 
 /**
  * Middleware that set the outgoing headers based on the following recommendations:
@@ -30,9 +31,9 @@ final class SecurityHeaders implements Server\MiddlewareInterface
     public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
     {
         return $handler->handle($request)
-            ->withHeader('Expect-CT', \sprintf('enforce,max-age=%s', $this->maxAge))
+            ->withHeader('Expect-CT', sprintf('enforce,max-age=%s', $this->maxAge))
             ->withHeader('Permissions-Policy', 'interest-cohort=()')
-            ->withHeader('Strict-Transport-Security', \sprintf('max-age=%s', $this->maxAge))
+            ->withHeader('Strict-Transport-Security', sprintf('max-age=%s', $this->maxAge))
             ->withHeader('X-Content-Type-Options', 'nosniff')
             ->withHeader('X-Frame-Options', 'DENY')
             ->withHeader('X-XSS-Protection', '1; mode=block');

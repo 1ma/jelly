@@ -6,6 +6,7 @@ namespace ABC\Middleware;
 
 use Psr\Http\Message;
 use Psr\Http\Server;
+use function header_remove;
 
 /**
  * A middleware that removes the X-Powered-By header from
@@ -26,7 +27,7 @@ final class ServerCloak implements Server\MiddlewareInterface
      */
     public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
     {
-        \header_remove('X-Powered-By');
+        header_remove('X-Powered-By');
 
         return $handler->handle($request)
             ->withHeader('Server', $this->serverName);

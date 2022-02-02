@@ -33,9 +33,7 @@ final class ExceptionTrapper implements Server\MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (Throwable $exception) {
-            return Assert::isARequestHandler(
-                $this->container->get(Constants::EXCEPTION_HANDLER)
-            )->handle(
+            return Assert::isARequestHandler($this->container->get(Constants::EXCEPTION_HANDLER))->handle(
                 $request
                     ->withAttribute(Constants::ERROR_TYPE, 500)
                     ->withAttribute(Constants::EXCEPTION, $exception)
