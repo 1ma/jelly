@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ABC\Handler;
+namespace ABC\Handlers;
 
-use ABC\Constants;
+use ABC\Kernel;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use function implode;
@@ -26,6 +26,6 @@ final class MethodNotAllowed implements Server\RequestHandlerInterface
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
         return $this->factory->createResponse(405)
-            ->withHeader('Allow', implode(', ', $request->getAttribute(Constants::ALLOWED_METHODS)));
+            ->withHeader('Allow', implode(', ', $request->getAttribute(Kernel::ALLOWED_METHODS)));
     }
 }

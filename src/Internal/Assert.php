@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ABC\Util;
+namespace ABC\Internal;
 
 use InvalidArgumentException;
-use Psr\Http\Server;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use TypeError;
 
 /**
@@ -16,9 +17,9 @@ final class Assert
     /**
      * @throws InvalidArgumentException
      */
-    public static function true(bool $condition, string $message = ''): void
+    public static function hasService(ContainerInterface $container, string $service, string $message = ''): void
     {
-        if (!$condition) {
+        if (!$container->has($service)) {
             throw new InvalidArgumentException($message);
         }
     }
@@ -29,7 +30,7 @@ final class Assert
      *
      * @throws TypeError
      */
-    public static function isARequestHandler(Server\RequestHandlerInterface $handler): Server\RequestHandlerInterface
+    public static function isRequestHandler(RequestHandlerInterface $handler): RequestHandlerInterface
     {
         return $handler;
     }

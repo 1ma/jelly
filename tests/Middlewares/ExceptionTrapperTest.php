@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Middleware;
+namespace ABC\Tests\Middlewares;
 
-use ABC\Constants;
-use ABC\Middleware\ExceptionTrapper;
-use ABC\Tests\Fixture\BrokenHandler;
-use ABC\Tests\Fixture\SuccessfulHandler;
+use ABC\Kernel;
+use ABC\Middlewares\ExceptionTrapper;
+use ABC\Tests\Fixtures\BrokenHandler;
+use ABC\Tests\Fixtures\SuccessfulHandler;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +28,7 @@ final class ExceptionTrapperTest extends TestCase
         $this->container = new Container;
 
         $this->container->set(self::class, $this);
-        $this->container->set(Constants::EXCEPTION_HANDLER, function(Container $c): RequestHandlerInterface {
+        $this->container->set(Kernel::EXCEPTION_HANDLER_SERVICE, function(Container $c): RequestHandlerInterface {
             return new class($c->get(self::class)) implements RequestHandlerInterface {
                 private $phpunit;
 
@@ -39,8 +39,8 @@ final class ExceptionTrapperTest extends TestCase
 
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    $errorType = $request->getAttribute(Constants::ERROR_TYPE);
-                    $exception = $request->getAttribute(Constants::EXCEPTION);
+                    $errorType = $request->getAttribute(Kernel::ERROR_TYPE);
+                    $exception = $request->getAttribute(Kernel::EXCEPTION);
 
                     $this->phpunit::assertSame(500, $errorType);
                     $this->phpunit::assertInstanceOf(Throwable::class, $exception);
@@ -61,7 +61,7 @@ final class ExceptionTrapperTest extends TestCase
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('Hello.', (string) $response->getBody());
-        self::assertFalse($this->container->resolved(Constants::EXCEPTION_HANDLER));
+        self::assertFalse($this->container->resolved(Kernel::EXCEPTION_HANDLER_SERVICE));
     }
 
     public function testExceptionPath(): void
@@ -73,7 +73,7 @@ final class ExceptionTrapperTest extends TestCase
 
         self::assertSame(500, $response->getStatusCode());
         self::assertSame('All is lost!', (string) $response->getBody());
-        self::assertTrue($this->container->resolved(Constants::EXCEPTION_HANDLER));
+        self::assertTrue($this->container->resolved(Kernel::EXCEPTION_HANDLER_SERVICE));
     }
 
     public function testExceptionHandlerServiceIsNotDefined(): void
@@ -90,7 +90,7 @@ final class ExceptionTrapperTest extends TestCase
     {
         $this->expectException(TypeError::class);
 
-        $this->container->set(Constants::EXCEPTION_HANDLER, 'WTF is this shit, I need a RequestHandlerInterface instance');
+        $this->container->set(Kernel::EXCEPTION_HANDLER_SERVICE, 'WTF is this shit, I need a RequestHandlerInterface instance');
 
         (new ExceptionTrapper($this->container))->process(
             new ServerRequest('GET', '/'),

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Handler;
+namespace ABC\Handlers;
 
 use Psr\Http\Message;
 use Psr\Http\Server;

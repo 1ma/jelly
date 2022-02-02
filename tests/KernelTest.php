@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace ABC\Tests;
 
-use ABC\Constants;
-use ABC\Handler;
+use ABC\Handlers;
 use ABC\Kernel;
-use ABC\Middleware\SecurityHeaders;
-use ABC\Middleware\ServerCloak;
-use ABC\Tests\Fixture\SuccessfulHandler;
-use ABC\Tests\Fixture\BrokenHandler;
+use ABC\Middlewares\SecurityHeaders;
+use ABC\Middlewares\ServerCloak;
+use ABC\Tests\Fixtures\SuccessfulHandler;
+use ABC\Tests\Fixtures\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7Server\ServerRequestCreator;
@@ -29,9 +28,9 @@ final class KernelTest extends TestCase
         $factory = new Psr17Factory();
 
         $this->container = new Container([
-            Constants::NOT_FOUND_HANDLER => new Handler\EmptyResponse($factory, 404),
-            Constants::BAD_METHOD_HANDLER => new Handler\MethodNotAllowed($factory),
-            Constants::EXCEPTION_HANDLER => new Handler\DebugException($factory, $factory),
+            Kernel::NOT_FOUND_HANDLER_SERVICE => new Handlers\EmptyResponse($factory, 404),
+            Kernel::BAD_METHOD_HANDLER_SERVICE => new Handlers\MethodNotAllowed($factory),
+            Kernel::EXCEPTION_HANDLER_SERVICE => new Handlers\DebugException($factory, $factory),
             'index' => new SuccessfulHandler,
             'boom' => new BrokenHandler
         ]);
@@ -96,7 +95,7 @@ final class KernelTest extends TestCase
             'Whoops!', false
         );
 
-        $this->container->set(Constants::EXCEPTION_HANDLER, new Handler\EmptyResponse(new Psr17Factory, 503));
+        $this->container->set(Kernel::EXCEPTION_HANDLER_SERVICE, new Handlers\EmptyResponse(new Psr17Factory, 503));
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/')),

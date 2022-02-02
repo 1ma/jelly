@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Fixture;
+namespace ABC\Tests\Fixtures;
 
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;

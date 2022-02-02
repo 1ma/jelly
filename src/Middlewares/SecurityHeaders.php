@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Middleware;
+namespace ABC\Middlewares;
 
 use Psr\Http\Message;
 use Psr\Http\Server;

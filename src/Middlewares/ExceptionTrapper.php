@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ABC\Middleware;
+namespace ABC\Middlewares;
 
-use ABC\Constants;
-use ABC\Util\Assert;
+use ABC\Internal\Assert;
+use ABC\Kernel;
 use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
@@ -33,11 +33,12 @@ final class ExceptionTrapper implements Server\MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (Throwable $exception) {
-            return Assert::isARequestHandler($this->container->get(Constants::EXCEPTION_HANDLER))->handle(
-                $request
-                    ->withAttribute(Constants::ERROR_TYPE, 500)
-                    ->withAttribute(Constants::EXCEPTION, $exception)
-            );
+            return Assert::isRequestHandler($this->container->get(Kernel::EXCEPTION_HANDLER_SERVICE))
+                ->handle(
+                    $request
+                        ->withAttribute(Kernel::ERROR_TYPE, 500)
+                        ->withAttribute(Kernel::EXCEPTION, $exception)
+                );
         }
     }
 }
