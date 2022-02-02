@@ -7,29 +7,38 @@ namespace ABC;
 use ABC\Handler;
 use ABC\Middleware;
 use ABC\Util;
+use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use Webmozart\Assert\Assert;
 
-class Kernel implements Server\RequestHandlerInterface
+final class Kernel implements Server\RequestHandlerInterface
 {
     /**
      * @var Server\MiddlewareInterface[]
      */
-    private array $decorators;
+    private array $middlewares;
     private readonly Util\RouteCollection $routes;
-    protected readonly Container\ContainerInterface $container;
+    private readonly Container\ContainerInterface $container;
+    private readonly ServerRequestCreatorInterface $creator;
+    private readonly Output $output;
 
-    public function __construct(Container\ContainerInterface $container)
+    public function __construct(
+        Container\ContainerInterface $container,
+        ServerRequestCreatorInterface $creator,
+        Output $output = new Output\FastCGI()
+    )
     {
         Assert::true($container->has(Constants::NOT_FOUND_HANDLER), '"Not Found" handler service missing');
         Assert::true($container->has(Constants::BAD_METHOD_HANDLER), '"Bad Method" handler service missing');
         Assert::true($container->has(Constants::EXCEPTION_HANDLER), 'Exception handler service missing');
 
-        $this->container = $container;
-        $this->decorators = [];
+        $this->middlewares = [];
         $this->routes = new Util\RouteCollection;
+        $this->container = $container;
+        $this->creator = $creator;
+        $this->output = $output;
     }
 
     /**
@@ -83,15 +92,15 @@ class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * Wrap the whole Kernel with $middleware.
+     * Wraps the Kernel with $middleware.
      */
     public function decorate(Server\MiddlewareInterface $middleware): void
     {
-        $this->decorators[] = $middleware;
+        $this->middlewares[] = $middleware;
     }
 
     /**
-     * Handle the request and return a response.
+     * Handles the request and returns a response.
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
@@ -103,7 +112,21 @@ class Kernel implements Server\RequestHandlerInterface
             new Middleware\ExceptionTrapper(
                 $this->container
             ),
-            ...$this->decorators
+            ...$this->middlewares
         )->handle($request);
+    }
+
+    /**
+     * Creates a request from the global variables,
+     * handles it and calls the Output service to send
+     * the response back.
+     */
+    public function run(): void
+    {
+        $this->output->send(
+            $this->handle(
+                $this->creator->fromGlobals()
+            )
+        );
     }
 }

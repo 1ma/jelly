@@ -13,6 +13,7 @@ use ABC\Tests\Fixture\SuccessfulHandler;
 use ABC\Tests\Fixture\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7Server\ServerRequestCreator;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +36,14 @@ final class KernelTest extends TestCase
             'boom' => new BrokenHandler
         ]);
 
-        $this->kernel = new Kernel($this->container);
+        $creator = new ServerRequestCreator(
+            $factory,
+            $factory,
+            $factory,
+            $factory
+        );
+
+        $this->kernel = new Kernel($this->container, $creator);
     }
 
     public function testHappyPath(): void

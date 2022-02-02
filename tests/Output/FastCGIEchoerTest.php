@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ABC\Tests\Output;
 
-use ABC\Output\FastCGIEchoer;
+use ABC\Output\FastCGI;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use function headers_list;
@@ -21,9 +21,10 @@ final class FastCGIEchoerTest extends TestCase
      */
     public function testRenderOfSimpleResponse(): void
     {
+        $sut = new FastCGI();
         ob_start();
 
-        FastCGIEchoer::echo(new Response(200, ['Content-Type' => ['text/plain'], 'Content-Length' => ['6']], 'Hello.'));
+        $sut->send(new Response(200, ['Content-Type' => ['text/plain'], 'Content-Length' => ['6']], 'Hello.'));
 
         self::assertSame('Hello.', ob_get_clean());
 
