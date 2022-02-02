@@ -16,10 +16,7 @@ use function implode;
  */
 final class MethodNotAllowed implements Server\RequestHandlerInterface
 {
-    /**
-     * @var Message\ResponseFactoryInterface
-     */
-    private $factory;
+    private readonly Message\ResponseFactoryInterface $factory;
 
     public function __construct(Message\ResponseFactoryInterface $factory)
     {

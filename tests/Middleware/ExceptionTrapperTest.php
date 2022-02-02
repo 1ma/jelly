@@ -21,10 +21,7 @@ use UMA\DIC\Container;
 
 final class ExceptionTrapperTest extends TestCase
 {
-    /**
-     * @var Container
-     */
-    private $container;
+    private Container $container;
 
     protected function setUp(): void
     {

@@ -17,10 +17,7 @@ use Psr\Http\Server;
  */
 final class SecurityHeaders implements Server\MiddlewareInterface
 {
-    /**
-     * @var int
-     */
-    private $maxAge;
+    private readonly int $maxAge;
 
     public function __construct(int $maxAge = 30)
     {

@@ -15,15 +15,8 @@ use function assert;
 
 final class RequestRouter implements Server\RequestHandlerInterface
 {
-    /**
-     * @var Container\ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var FastRoute\Dispatcher
-     */
-    private $router;
+    private readonly Container\ContainerInterface $container;
+    private readonly FastRoute\Dispatcher $router;
 
     public function __construct(
         Container\ContainerInterface $container,

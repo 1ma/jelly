@@ -16,15 +16,8 @@ use function sprintf;
  */
 final class DebugException implements Server\RequestHandlerInterface
 {
-    /**
-     * @var Message\ResponseFactoryInterface
-     */
-    private $responseFactory;
-
-    /**
-     * @var Message\StreamFactoryInterface
-     */
-    private $streamFactory;
+    private readonly Message\ResponseFactoryInterface $responseFactory;
+    private readonly Message\StreamFactoryInterface $streamFactory;
 
     public function __construct(
         Message\ResponseFactoryInterface $responseFactory,

@@ -20,15 +20,8 @@ use UMA\DIC\Container;
 
 final class KernelTest extends TestCase
 {
-    /**
-     * @var Container
-     */
-    private $container;
-
-    /**
-     * @var Kernel
-     */
-    private $kernel;
+    private Container $container;
+    private Kernel $kernel;
 
     protected function setUp(): void
     {

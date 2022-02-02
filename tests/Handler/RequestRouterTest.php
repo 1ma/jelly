@@ -20,10 +20,7 @@ use UMA\DIC\Container;
 
 final class RequestRouterTest extends TestCase
 {
-    /**
-     * @var Container
-     */
-    private $container;
+    private Container $container;
 
     protected function setUp(): void
     {

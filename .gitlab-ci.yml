@@ -1,30 +1,16 @@
 stages:
   - testing
 
-test-php-7.3:
+test:
   stage: testing
-  image: 1maa/php-dev:7.3
-  script:
-    - composer install
-    - php vendor/bin/phpunit --verbose
-
-test-php-7.4:
-  stage: testing
-  image: 1maa/php-dev:7.4
-  script:
-    - composer install
-    - php vendor/bin/phpunit --verbose
-
-test-php-8.0:
-  stage: testing
-  image: 1maa/php-dev:8.0
+  image: 1maa/php-dev:8.1
   script:
     - composer install
     - php vendor/bin/phpunit --verbose
 
 metrics:
   stage: testing
-  image: 1maa/php-dev:8.0
+  image: 1maa/php-dev:8.1
   script:
     - composer install
     - php vendor/bin/phpunit --verbose

@@ -15,15 +15,8 @@ use Psr\Http\Server;
  */
 final class EmptyResponse implements Server\RequestHandlerInterface
 {
-    /**
-     * @var Message\ResponseFactoryInterface
-     */
-    private $factory;
-
-    /**
-     * @var int
-     */
-    private $statusCode;
+    private readonly Message\ResponseFactoryInterface $factory;
+    private readonly int $statusCode;
 
     public function __construct(Message\ResponseFactoryInterface $factory, int $statusCode)
     {

@@ -14,10 +14,7 @@ use Psr\Http\Server;
  */
 final class ServerCloak implements Server\MiddlewareInterface
 {
-    /**
-     * @var string
-     */
-    private $serverName;
+    private readonly string $serverName;
 
     public function __construct(string $serverName)
     {

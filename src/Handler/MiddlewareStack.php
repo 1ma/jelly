@@ -9,15 +9,8 @@ use Psr\Http\Server;
 
 final class MiddlewareStack implements Server\RequestHandlerInterface
 {
-    /**
-     * @var Server\MiddlewareInterface
-     */
-    private $middleware;
-
-    /**
-     * @var Server\RequestHandlerInterface
-     */
-    private $next;
+    private readonly Server\MiddlewareInterface $middleware;
+    private readonly Server\RequestHandlerInterface $next;
 
     public static function compose(Server\RequestHandlerInterface $bottom, Server\MiddlewareInterface ...$decorators): Server\RequestHandlerInterface
     {

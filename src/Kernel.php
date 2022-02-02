@@ -15,19 +15,11 @@ use Webmozart\Assert\Assert;
 class Kernel implements Server\RequestHandlerInterface
 {
     /**
-     * @var Container\ContainerInterface
-     */
-    protected $container;
-
-    /**
      * @var Server\MiddlewareInterface[]
      */
-    private $decorators;
-
-    /**
-     * @var Util\RouteCollection
-     */
-    private $routes;
+    private array $decorators;
+    private readonly Util\RouteCollection $routes;
+    protected readonly Container\ContainerInterface $container;
 
     public function __construct(Container\ContainerInterface $container)
     {

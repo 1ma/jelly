@@ -14,10 +14,7 @@ use TypeError;
 
 final class ExceptionTrapper implements Server\MiddlewareInterface
 {
-    /**
-     * @var Container\ContainerInterface
-     */
-    private $container;
+    private readonly Container\ContainerInterface $container;
 
     public function __construct(Container\ContainerInterface $container)
     {
