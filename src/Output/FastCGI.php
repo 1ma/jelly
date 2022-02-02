@@ -11,6 +11,7 @@ use function function_exists;
 use function header;
 use function implode;
 use function sprintf;
+use function strtolower;
 
 /**
  * Sends a PSR7-compatible Response back to a FastCGI client
@@ -55,14 +56,18 @@ final class FastCGI implements Output
             ));
         }
 
-        $stream = $response->getBody();
-        $stream->rewind();
+        // Only attempt to echo the response when neither the
+        // X-SendFile nor X-Accel-Redirect headers are present in the response
+        if (!$response->hasHeader('X-Sendfile') && !$response->hasHeader('X-Accel-Redirect')) {
+            $stream = $response->getBody();
+            $stream->rewind();
 
-        while ('' !== $chunk = $stream->read($this->chunkSize)) {
-            echo $chunk;
+            while ('' !== $chunk = $stream->read($this->chunkSize)) {
+                echo $chunk;
+            }
+
+            $stream->close();
         }
-
-        $stream->close();
 
         if ($this->endFastCGI) {
             fastcgi_finish_request();
