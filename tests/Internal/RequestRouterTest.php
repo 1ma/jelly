@@ -11,11 +11,10 @@ use LogicException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TypeError;
+use RuntimeException;
 use UMA\DIC\Container;
 
 final class RequestRouterTest extends TestCase
@@ -26,10 +25,8 @@ final class RequestRouterTest extends TestCase
     {
         $this->container = new Container;
 
-        $this->container->set(self::class, $this);
-
-        $this->container->set('hello_handler', function(Container $c): RequestHandlerInterface {
-            return new class($c->get(self::class)) implements RequestHandlerInterface {
+        $this->container->set('hello_handler', function(): RequestHandlerInterface {
+            return new class($this) implements RequestHandlerInterface {
                 private readonly TestCase $phpunit;
 
                 public function __construct(TestCase $phpunit)
@@ -59,8 +56,8 @@ final class RequestRouterTest extends TestCase
             };
         });
 
-        $this->container->set(Kernel::NOT_FOUND_HANDLER_SERVICE, function(Container $c): RequestHandlerInterface {
-            return new class($c->get(self::class)) implements RequestHandlerInterface {
+        $this->container->set(Kernel::NOT_FOUND_HANDLER_SERVICE, function(): RequestHandlerInterface {
+            return new class($this) implements RequestHandlerInterface {
                 private readonly TestCase $phpunit;
 
                 public function __construct(TestCase $phpunit)
@@ -79,8 +76,8 @@ final class RequestRouterTest extends TestCase
             };
         });
 
-        $this->container->set(Kernel::BAD_METHOD_HANDLER_SERVICE, function(Container $c): RequestHandlerInterface {
-            return new class($c->get(self::class)) implements RequestHandlerInterface {
+        $this->container->set(Kernel::BAD_METHOD_HANDLER_SERVICE, function(): RequestHandlerInterface {
+            return new class($this) implements RequestHandlerInterface {
                 private readonly TestCase $phpunit;
 
                 public function __construct(TestCase $phpunit)
@@ -175,7 +172,7 @@ final class RequestRouterTest extends TestCase
 
     public function testNotFoundHandlerServiceNotDefined(): void
     {
-        $this->expectException(NotFoundExceptionInterface::class);
+        $this->expectException(RuntimeException::class);
 
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
@@ -188,7 +185,7 @@ final class RequestRouterTest extends TestCase
 
     public function testBadMethodHandlerServiceNotDefined(): void
     {
-        $this->expectException(NotFoundExceptionInterface::class);
+        $this->expectException(RuntimeException::class);
 
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
@@ -202,7 +199,7 @@ final class RequestRouterTest extends TestCase
 
     public function testNotFoundHandlerServiceIsNotARequestHandler(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(RuntimeException::class);
 
         $this->container->set(Kernel::NOT_FOUND_HANDLER_SERVICE, 123);
 
@@ -217,7 +214,7 @@ final class RequestRouterTest extends TestCase
 
     public function testBadMethodHandlerServiceIsNotARequestHandler(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(RuntimeException::class);
 
         $this->container->set(Kernel::BAD_METHOD_HANDLER_SERVICE, 123);
 

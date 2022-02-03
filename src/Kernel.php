@@ -12,6 +12,10 @@ use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
 use Psr\Http\Server;
+use function fastcgi_finish_request;
+use function header;
+use function implode;
+use function sprintf;
 
 final class Kernel implements Server\RequestHandlerInterface
 {
@@ -82,19 +86,22 @@ final class Kernel implements Server\RequestHandlerInterface
     public const HANDLER = 'abc.handler';
 
     /**
+     * The default behaviour is emitting the response in chunks of at most 8 MiB at a time.
+     *
+     * This is to avoid exhausting the memory available to the PHP process.
+     * By default, the memory_limit INI directive is 128MB so 8 MiB should be
+     * low enough in virtually all cases.
+     */
+    private const DEFAULT_CHUNK_SIZE = 8 * (1024 ** 2);
+
+    /**
      * @var Server\MiddlewareInterface[]
      */
     private array $middlewares;
     private readonly Internal\RouteCollection $routes;
     private readonly ContainerInterface $container;
-    private readonly ServerRequestCreatorInterface $creator;
-    private readonly Output $output;
 
-    public function __construct(
-        ContainerInterface $container,
-        ServerRequestCreatorInterface $creator,
-        Output $output = new Output\FastCGI()
-    )
+    public function __construct(ContainerInterface $container)
     {
         Internal\Assert::hasService($container, self::NOT_FOUND_HANDLER_SERVICE, '"Not Found" handler service missing');
         Internal\Assert::hasService($container, self::BAD_METHOD_HANDLER_SERVICE, '"Bad Method" handler service missing');
@@ -103,8 +110,6 @@ final class Kernel implements Server\RequestHandlerInterface
         $this->middlewares = [];
         $this->routes = new Internal\RouteCollection;
         $this->container = $container;
-        $this->creator = $creator;
-        $this->output = $output;
     }
 
     /**
@@ -184,12 +189,44 @@ final class Kernel implements Server\RequestHandlerInterface
      * handles it and calls the Output service to send
      * the response back.
      */
-    public function run(): void
+    public function run(
+        ServerRequestCreatorInterface $factory,
+        int $chunkSize = self::DEFAULT_CHUNK_SIZE,
+        bool $endFastCGI = true
+    ): void
     {
-        $this->output->send(
-            $this->handle(
-                $this->creator->fromGlobals()
-            )
-        );
+        $response = $this->handle($factory->fromGlobals());
+
+        header(sprintf(
+            'HTTP/%s %s %s',
+            $response->getProtocolVersion(),
+            $response->getStatusCode(),
+            $response->getReasonPhrase()
+        ));
+
+        foreach ($response->getHeaders() as $name => $values) {
+            header(sprintf(
+                '%s: %s',
+                $name,
+                implode(', ', $values)
+            ));
+        }
+
+        // Only attempt to echo the response when neither the
+        // X-SendFile nor X-Accel-Redirect headers are present in the response
+        if (!$response->hasHeader('X-Sendfile') && !$response->hasHeader('X-Accel-Redirect')) {
+            $stream = $response->getBody();
+            $stream->rewind();
+
+            while ('' !== $chunk = $stream->read($chunkSize)) {
+                echo $chunk;
+            }
+
+            $stream->close();
+        }
+
+        if ($endFastCGI && function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
     }
 }
