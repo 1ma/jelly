@@ -171,10 +171,7 @@ final class Kernel implements Server\RequestHandlerInterface
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
         return Handlers\MiddlewareStack::compose(
-            new Handlers\RequestRouter(
-                $this->container,
-                $this->routes
-            ),
+            (new Internal\RequestRouter($this->container, $this->routes))->resolve($request),
             new Middlewares\ExceptionTrapper(
                 $this->container
             ),

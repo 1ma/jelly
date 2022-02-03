@@ -30,7 +30,7 @@ final class ExceptionTrapperTest extends TestCase
         $this->container->set(self::class, $this);
         $this->container->set(Kernel::EXCEPTION_HANDLER_SERVICE, function(Container $c): RequestHandlerInterface {
             return new class($c->get(self::class)) implements RequestHandlerInterface {
-                private $phpunit;
+                private readonly TestCase $phpunit;
 
                 public function __construct(TestCase $phpunit)
                 {

@@ -15,7 +15,8 @@ use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message;
+use Psr\Http\Server;
 use UMA\DIC\Container;
 
 final class KernelTest extends TestCase
@@ -126,6 +127,36 @@ final class KernelTest extends TestCase
         );
     }
 
+    public function testResolvedHandlerAndArgsAreAvailableToMiddlewares(): void
+    {
+        $this->kernel->GET('/hello/{name}', 'index');
+        $this->kernel->decorate(new class($this) implements Server\MiddlewareInterface {
+            private readonly TestCase $phpunit;
+
+            public function __construct(TestCase $phpunit)
+            {
+                $this->phpunit = $phpunit;
+            }
+
+            public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
+            {
+                $this->phpunit::assertSame('index', $request->getAttribute(Kernel::HANDLER));
+                $this->phpunit::assertSame(['name' => 'joe'], $request->getAttribute(Kernel::ARGS));
+
+                return $handler->handle($request);
+            }
+        });
+
+        self::assertExpectedResponse(
+            $this->kernel->handle(new ServerRequest('GET', '/hello/joe')),
+            200,
+            [
+                'Content-Type' => ['text/plain']
+            ],
+            'Hello joe.'
+        );
+    }
+
     /**
      * @runInSeparateProcess
      */
@@ -149,7 +180,7 @@ final class KernelTest extends TestCase
      * @throws ExpectationFailedException
      */
     private static function assertExpectedResponse(
-        ResponseInterface $response,
+        Message\ResponseInterface $response,
         int $expectedStatusCode,
         array $expectedHeaders,
         string $expectedBody,
