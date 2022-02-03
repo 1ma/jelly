@@ -13,6 +13,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use function fastcgi_finish_request;
+use function function_exists;
 use function header;
 use function implode;
 use function sprintf;
@@ -191,8 +192,7 @@ final class Kernel implements Server\RequestHandlerInterface
      */
     public function run(
         ServerRequestCreatorInterface $factory,
-        int $chunkSize = self::DEFAULT_CHUNK_SIZE,
-        bool $endFastCGI = true
+        int $chunkSize = self::DEFAULT_CHUNK_SIZE
     ): void
     {
         $response = $this->handle($factory->fromGlobals());
@@ -225,7 +225,7 @@ final class Kernel implements Server\RequestHandlerInterface
             $stream->close();
         }
 
-        if ($endFastCGI && function_exists('fastcgi_finish_request')) {
+        if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
         }
     }
