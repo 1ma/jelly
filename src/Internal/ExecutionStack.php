@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ABC\Handlers;
+namespace ABC\Internal;
 
 use Psr\Http\Message;
 use Psr\Http\Server;
 
+/**
+ * @internal
+ */
 final class ExecutionStack implements Server\RequestHandlerInterface
 {
     private readonly Server\MiddlewareInterface $middleware;

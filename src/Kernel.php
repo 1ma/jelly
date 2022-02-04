@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ABC;
 
-use ABC\Handlers;
 use ABC\Internal;
 use LogicException;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
@@ -119,7 +118,7 @@ final class Kernel implements Server\RequestHandlerInterface
             throw new LogicException(message: $e->getMessage(), previous: $e);
         }
 
-        return Handlers\ExecutionStack::compose($handler, ...$middlewareChain)->handle($request);
+        return Internal\ExecutionStack::compose($handler, ...$middlewareChain)->handle($request);
     }
 
     /**
