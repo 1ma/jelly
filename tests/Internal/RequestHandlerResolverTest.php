@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ABC\Tests\Internal;
 
 use ABC\Constants;
-use ABC\Internal\RequestRouter;
+use ABC\Internal\RequestHandlerResolver;
 use ABC\Internal\RouteCollection;
 use LogicException;
 use Nyholm\Psr7\Response;
@@ -18,7 +18,7 @@ use UMA\DIC\Container;
 use function implode;
 use function sprintf;
 
-final class RequestRouterTest extends TestCase
+final class RequestHandlerResolverTest extends TestCase
 {
     private Container $container;
 
@@ -98,8 +98,7 @@ final class RequestRouterTest extends TestCase
         self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('GET', '/hello/abc');
-        $response = (new RequestRouter($this->container, $routes))
-            ->resolve($request)
+        $response = $this->container->get((new RequestHandlerResolver($routes))->resolve($request))
             ->handle($request);
 
         self::assertTrue($this->container->resolved('hello_handler'));
@@ -120,8 +119,7 @@ final class RequestRouterTest extends TestCase
         self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('GET', '/bye/abc');
-        $response = (new RequestRouter($this->container, $routes))
-            ->resolve($request)
+        $response = $this->container->get((new RequestHandlerResolver($routes))->resolve($request))
             ->handle($request);
 
         self::assertFalse($this->container->resolved('bogus_handler'));
@@ -144,8 +142,7 @@ final class RequestRouterTest extends TestCase
         self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('DELETE', '/hello/abc');
-        $response = (new RequestRouter($this->container, $routes))
-            ->resolve($request)
+        $response = $this->container->get((new RequestHandlerResolver($routes))->resolve($request))
             ->handle($request);
 
         self::assertFalse($this->container->resolved('hello_handler'));
@@ -156,62 +153,5 @@ final class RequestRouterTest extends TestCase
         self::assertSame(405, $response->getStatusCode());
         self::assertTrue($response->hasHeader('Allow'));
         self::assertSame('GET, POST', $response->getHeaderLine('Allow'));
-    }
-
-    public function testNotFoundHandlerServiceNotDefined(): void
-    {
-        $this->expectException(LogicException::class);
-
-        $routes = new RouteCollection;
-        $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
-
-        $request = new ServerRequest('GET', '/bye/abc');
-        (new RequestRouter(new Container, $routes))
-            ->resolve($request)
-            ->handle($request);
-    }
-
-    public function testBadMethodHandlerServiceNotDefined(): void
-    {
-        $this->expectException(LogicException::class);
-
-        $routes = new RouteCollection;
-        $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
-        $routes->addRoute('POST', '/hello/{name}', 'hello_handler');
-
-        $request = new ServerRequest('DELETE', '/hello/abc');
-        (new RequestRouter(new Container, $routes))
-            ->resolve($request)
-            ->handle($request);
-    }
-
-    public function testNotFoundHandlerServiceIsNotARequestHandler(): void
-    {
-        $this->expectException(LogicException::class);
-
-        $this->container->set(Constants::NOT_FOUND_HANDLER->value, 123);
-
-        $routes = new RouteCollection;
-        $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
-
-        $request = new ServerRequest('GET', '/bye/abc');
-        (new RequestRouter($this->container, $routes))
-            ->resolve($request)
-            ->handle($request);
-    }
-
-    public function testBadMethodHandlerServiceIsNotARequestHandler(): void
-    {
-        $this->expectException(LogicException::class);
-
-        $this->container->set(Constants::BAD_METHOD_HANDLER->value, 123);
-
-        $routes = new RouteCollection;
-        $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
-
-        $request = new ServerRequest('DELETE', '/hello/abc');
-        (new RequestRouter($this->container, $routes))
-            ->resolve($request)
-            ->handle($request);
     }
 }

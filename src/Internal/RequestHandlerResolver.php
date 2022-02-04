@@ -5,36 +5,22 @@ declare(strict_types=1);
 namespace ABC\Internal;
 
 use ABC\Constants;
-use ABC\Internal;
 use FastRoute;
-use LogicException;
-use Psr\Container;
 use Psr\Http\Message;
-use Psr\Http\Server;
-use RuntimeException;
-use TypeError;
 
 /**
  * @internal
  */
-final class RequestRouter
+final class RequestHandlerResolver
 {
-    private readonly Container\ContainerInterface $container;
     private readonly FastRoute\Dispatcher $router;
 
-    public function __construct(
-        Container\ContainerInterface $container,
-        FastRoute\DataGenerator $routeCollection
-    )
+    public function __construct(FastRoute\DataGenerator $routeCollection)
     {
-        $this->container = $container;
         $this->router = new FastRoute\Dispatcher\GroupCountBased($routeCollection->getData());
     }
 
-    /**
-     * @throws LogicException If the resolved service is not an implementation of the RequestHandlerInterface
-     */
-    public function resolve(Message\ServerRequestInterface &$request): Server\RequestHandlerInterface
+    public function resolve(Message\ServerRequestInterface &$request): string
     {
         $routeInfo = $this->router->dispatch(
             $request->getMethod(),
@@ -60,12 +46,6 @@ final class RequestRouter
                     ->withAttribute(Constants::ARGS->value, $routeInfo[2])
         };
 
-        try {
-            return Internal\Assert::isRequestHandler($this->container->get($service));
-        } catch (Container\ContainerExceptionInterface) {
-            throw new LogicException("Error retrieving '$service' from container");
-        } catch (TypeError) {
-            throw new LogicException("'$service' service does not implement RequestHandlerInterface");
-        }
+        return $service;
     }
 }
