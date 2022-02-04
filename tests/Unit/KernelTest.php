@@ -77,9 +77,13 @@ final class KernelTest extends TestCase
         );
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testKernelWrapping(): void
     {
         $this->kernel->GET('/', 'index');
+        $this->kernel->wrap(ServerCloak::class);
         $this->kernel->wrap(SecurityHeaders::class);
 
         self::assertExpectedResponse(
@@ -87,6 +91,7 @@ final class KernelTest extends TestCase
             200,
             [
                 'Content-Type' => ['text/plain'],
+                'Server' => ['api.example.com'],
                 'Expect-CT' => ['enforce,max-age=30'],
                 'Permissions-Policy' => ['interest-cohort=()'],
                 'Strict-Transport-Security' => ['max-age=30'],
@@ -127,25 +132,6 @@ final class KernelTest extends TestCase
                 'Content-Type' => ['text/plain']
             ],
             'Hello joe.'
-        );
-    }
-
-    /**
-     * @runInSeparateProcess
-     */
-    public function testServerCloakMiddleware(): void
-    {
-        $this->kernel->GET('/', 'index');
-        $this->kernel->wrap(ServerCloak::class);
-
-        self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
-            200,
-            [
-                'Content-Type' => ['text/plain'],
-                'Server' => ['api.example.com']
-            ],
-            'Hello.'
         );
     }
 

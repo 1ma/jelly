@@ -14,9 +14,9 @@ use function get_class;
 use function sprintf;
 
 /**
- * ABC's default handler for debugging uncaught exceptions during development.
+ * A reusable middleware for debugging uncaught exceptions during development.
  */
-final class DebugException implements Server\MiddlewareInterface
+final class UncaughtExceptionDebugger implements Server\MiddlewareInterface
 {
     private readonly Message\ResponseFactoryInterface $responseFactory;
     private readonly Message\StreamFactoryInterface $streamFactory;
@@ -35,18 +35,18 @@ final class DebugException implements Server\MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (Throwable $t) {
-            $body = sprintf(
-                "Exception Type: %s\nMessage: %s\nStack Trace:\n#! %s(%s)\n%s\n",
-                get_class($t),
-                $t->getMessage(),
-                $t->getFile(), $t->getLine(),
-                $t->getTraceAsString()
-            );
-
             return $this->responseFactory
                 ->createResponse(500)
                 ->withHeader('Content-Type', 'text/plain')
-                ->withBody($this->streamFactory->createStream($body));
+                ->withBody($this->streamFactory->createStream(
+                    sprintf(
+                        "Exception Type: %s\nMessage: %s\nStack Trace:\n#! %s(%s)\n%s\n",
+                        get_class($t),
+                        $t->getMessage(),
+                        $t->getFile(), $t->getLine(),
+                        $t->getTraceAsString()
+                    )
+                ));
         }
     }
 }

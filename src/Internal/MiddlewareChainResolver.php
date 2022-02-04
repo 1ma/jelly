@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ABC\Internal;
 
+/**
+ * @internal
+ */
 final class MiddlewareChainResolver
 {
     private array $globalMiddlewares;
