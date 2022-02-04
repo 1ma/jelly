@@ -62,7 +62,7 @@ final class ShitShowTest extends TestCase
     private function routeDefinitionExceptionsProvider(): array
     {
         return [
-            'The route that matches is not defined as a service in the container' => [
+            'The service name attached to a route definition is not present in the container' => [
                 new Container([
                     Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404)),
                     Constants\Services::BAD_METHOD_HANDLER->value => new GenericResponse(new Response(405))
