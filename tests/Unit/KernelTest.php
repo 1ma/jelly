@@ -12,6 +12,7 @@ use ABC\Middlewares\ServerCloak;
 use ABC\Tests\Fixtures\HelloHandler;
 use ABC\Tests\Fixtures\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +30,7 @@ final class KernelTest extends TestCase
         $factory = new Psr17Factory();
 
         $this->container = new Container([
-            Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\EmptyResponse($factory, 404),
+            Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\GenericResponse(new Response(404)),
             Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
