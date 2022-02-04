@@ -37,8 +37,8 @@ final class Kernel implements Server\RequestHandlerInterface
 
     public function __construct(ContainerInterface $container)
     {
-        Internal\Assert::hasService($container, Constants::NOT_FOUND_HANDLER->value, 'Mandatory NOT_FOUND_HANDLER service missing');
-        Internal\Assert::hasService($container, Constants::BAD_METHOD_HANDLER->value, 'Mandatory BAD_METHOD_HANDLER service missing');
+        Internal\Assert::hasService($container, Constants\Services::NOT_FOUND_HANDLER->value, 'Mandatory NOT_FOUND_HANDLER service missing');
+        Internal\Assert::hasService($container, Constants\Services::BAD_METHOD_HANDLER->value, 'Mandatory BAD_METHOD_HANDLER service missing');
 
         $this->chainResolver = new Internal\MiddlewareChainResolver();
         $this->routes = new Internal\RouteCollection;
@@ -149,8 +149,8 @@ final class Kernel implements Server\RequestHandlerInterface
         // Only attempt to echo the response when neither the
         // X-SendFile nor X-Accel-Redirect headers are present in the response
         if (!$response->hasHeader('X-Sendfile') && !$response->hasHeader('X-Accel-Redirect')) {
-            $chunkSize = $this->container->has(Constants::ECHO_CHUNK_SIZE->value) ?
-                $this->container->get(Constants::ECHO_CHUNK_SIZE->value) : self::DEFAULT_CHUNK_SIZE;
+            $chunkSize = $this->container->has(Constants\Settings::ECHO_CHUNK_SIZE->value) ?
+                $this->container->get(Constants\Settings::ECHO_CHUNK_SIZE->value) : self::DEFAULT_CHUNK_SIZE;
 
             $stream = $response->getBody();
             $stream->rewind();

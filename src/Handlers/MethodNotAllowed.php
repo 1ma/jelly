@@ -26,6 +26,6 @@ final class MethodNotAllowed implements Server\RequestHandlerInterface
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
         return $this->factory->createResponse(405)
-            ->withHeader('Allow', implode(', ', $request->getAttribute(Constants::ALLOWED_METHODS->value)));
+            ->withHeader('Allow', implode(', ', $request->getAttribute(Constants\Attributes::ALLOWED_METHODS->value)));
     }
 }

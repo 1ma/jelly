@@ -37,8 +37,8 @@ final class RequestHandlerResolverTest extends TestCase
 
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    $handler = $request->getAttribute(Constants::HANDLER->value);
-                    $args = $request->getAttribute(Constants::ARGS->value);
+                    $handler = $request->getAttribute(Constants\Attributes::HANDLER->value);
+                    $args = $request->getAttribute(Constants\Attributes::ARGS->value);
 
                     $this->phpunit::assertSame('hello_handler', $handler);
                     $this->phpunit::assertSame(['name' => 'abc'], $args);
@@ -57,7 +57,7 @@ final class RequestHandlerResolverTest extends TestCase
             };
         });
 
-        $this->container->set(Constants::NOT_FOUND_HANDLER->value, static function(): RequestHandlerInterface {
+        $this->container->set(Constants\Services::NOT_FOUND_HANDLER->value, static function(): RequestHandlerInterface {
             return new class implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
@@ -66,7 +66,7 @@ final class RequestHandlerResolverTest extends TestCase
             };
         });
 
-        $this->container->set(Constants::BAD_METHOD_HANDLER->value, function(): RequestHandlerInterface {
+        $this->container->set(Constants\Services::BAD_METHOD_HANDLER->value, function(): RequestHandlerInterface {
             return new class($this) implements RequestHandlerInterface {
                 private readonly TestCase $phpunit;
 
@@ -77,7 +77,7 @@ final class RequestHandlerResolverTest extends TestCase
 
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    $allowedMethods = $request->getAttribute(Constants::ALLOWED_METHODS->value);
+                    $allowedMethods = $request->getAttribute(Constants\Attributes::ALLOWED_METHODS->value);
 
                     $this->phpunit::assertIsArray($allowedMethods);
                     $this->phpunit::assertNotEmpty($allowedMethods);
@@ -94,16 +94,16 @@ final class RequestHandlerResolverTest extends TestCase
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
         self::assertFalse($this->container->resolved('hello_handler'));
-        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
-        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('GET', '/hello/abc');
         $response = $this->container->get((new RequestHandlerResolver($routes))->resolve($request))
             ->handle($request);
 
         self::assertTrue($this->container->resolved('hello_handler'));
-        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
-        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::BAD_METHOD_HANDLER->value));
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('Hello, abc.', (string) $response->getBody());
@@ -115,16 +115,16 @@ final class RequestHandlerResolverTest extends TestCase
         $routes->addRoute('GET', '/hello/{name}', 'bogus_handler');
 
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
-        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('GET', '/bye/abc');
         $response = $this->container->get((new RequestHandlerResolver($routes))->resolve($request))
             ->handle($request);
 
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertTrue($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
-        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
+        self::assertTrue($this->container->resolved(Constants\Services::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::BAD_METHOD_HANDLER->value));
 
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('Route /bye/abc not found', (string) $response->getBody());
@@ -138,8 +138,8 @@ final class RequestHandlerResolverTest extends TestCase
 
         self::assertFalse($this->container->resolved('hello_handler'));
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
-        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('DELETE', '/hello/abc');
         $response = $this->container->get((new RequestHandlerResolver($routes))->resolve($request))
@@ -147,8 +147,8 @@ final class RequestHandlerResolverTest extends TestCase
 
         self::assertFalse($this->container->resolved('hello_handler'));
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
-        self::assertTrue($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants\Services::NOT_FOUND_HANDLER->value));
+        self::assertTrue($this->container->resolved(Constants\Services::BAD_METHOD_HANDLER->value));
 
         self::assertSame(405, $response->getStatusCode());
         self::assertTrue($response->hasHeader('Allow'));

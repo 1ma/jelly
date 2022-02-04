@@ -17,7 +17,7 @@ final class SuccessfulHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $name = $request->getAttribute(Constants::ARGS->value)['name'] ?? null;
+        $name = $request->getAttribute(Constants\Attributes::ARGS->value)['name'] ?? null;
 
         return new Response(200, ['Content-Type' => 'text/plain'], null === $name ? 'Hello.' : "Hello $name.");
     }

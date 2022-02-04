@@ -29,8 +29,8 @@ final class KernelTest extends TestCase
         $factory = new Psr17Factory();
 
         $this->container = new Container([
-            Constants::NOT_FOUND_HANDLER->value => new Handlers\EmptyResponse($factory, 404),
-            Constants::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
+            Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\EmptyResponse($factory, 404),
+            Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
             'index' => new SuccessfulHandler,
@@ -112,8 +112,8 @@ final class KernelTest extends TestCase
 
             public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
             {
-                $this->phpunit::assertSame('index', $request->getAttribute(Constants::HANDLER->value));
-                $this->phpunit::assertSame(['name' => 'joe'], $request->getAttribute(Constants::ARGS->value));
+                $this->phpunit::assertSame('index', $request->getAttribute(Constants\Attributes::HANDLER->value));
+                $this->phpunit::assertSame(['name' => 'joe'], $request->getAttribute(Constants\Attributes::ARGS->value));
 
                 return $handler->handle($request);
             }

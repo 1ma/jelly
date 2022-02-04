@@ -31,7 +31,7 @@ final class DebugException implements Server\RequestHandlerInterface
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
         /** @var Throwable $exception */
-        $exception = $request->getAttribute(Constants::EXCEPTION->value);
+        $exception = $request->getAttribute(Constants\Attributes::EXCEPTION->value);
 
         $body = sprintf(
             "Exception Type: %s\nMessage: %s\nStack Trace:\n#! %s(%s)\n%s\n",

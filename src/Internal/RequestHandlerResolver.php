@@ -28,22 +28,22 @@ final class RequestHandlerResolver
         );
 
         $service = match ($routeInfo[0]) {
-            FastRoute\Dispatcher::NOT_FOUND => Constants::NOT_FOUND_HANDLER->value,
-            FastRoute\Dispatcher::METHOD_NOT_ALLOWED => Constants::BAD_METHOD_HANDLER->value,
+            FastRoute\Dispatcher::NOT_FOUND => Constants\Services::NOT_FOUND_HANDLER->value,
+            FastRoute\Dispatcher::METHOD_NOT_ALLOWED => Constants\Services::BAD_METHOD_HANDLER->value,
             FastRoute\Dispatcher::FOUND => $routeInfo[1]
         };
 
         $request = match ($service) {
-            Constants::NOT_FOUND_HANDLER->value => $request,
+            Constants\Services::NOT_FOUND_HANDLER->value => $request,
 
-            Constants::BAD_METHOD_HANDLER->value =>
+            Constants\Services::BAD_METHOD_HANDLER->value =>
                 $request
-                    ->withAttribute(Constants::ALLOWED_METHODS->value, $routeInfo[1]),
+                    ->withAttribute(Constants\Attributes::ALLOWED_METHODS->value, $routeInfo[1]),
 
             default =>
                 $request
-                    ->withAttribute(Constants::HANDLER->value, $routeInfo[1])
-                    ->withAttribute(Constants::ARGS->value, $routeInfo[2])
+                    ->withAttribute(Constants\Attributes::HANDLER->value, $routeInfo[1])
+                    ->withAttribute(Constants\Attributes::ARGS->value, $routeInfo[2])
         };
 
         return $service;
