@@ -7,17 +7,17 @@ namespace ABC\Handlers;
 use Psr\Http\Message;
 use Psr\Http\Server;
 
-final class MiddlewareStack implements Server\RequestHandlerInterface
+final class ExecutionStack implements Server\RequestHandlerInterface
 {
     private readonly Server\MiddlewareInterface $middleware;
     private readonly Server\RequestHandlerInterface $next;
 
-    public static function compose(Server\RequestHandlerInterface $bottom, Server\MiddlewareInterface ...$decorators): Server\RequestHandlerInterface
+    public static function compose(Server\RequestHandlerInterface $core, Server\MiddlewareInterface ...$layers): Server\RequestHandlerInterface
     {
-        $stack = $bottom;
+        $stack = $core;
 
-        foreach ($decorators as $decorator) {
-            $stack = new self($stack, $decorator);
+        foreach ($layers as $layer) {
+            $stack = new self($stack, $layer);
         }
 
         return $stack;

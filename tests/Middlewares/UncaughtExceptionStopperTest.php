@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace ABC\Tests\Middlewares;
 
 use ABC\Constants;
-use ABC\Middlewares\ExceptionTrapper;
+use ABC\Middlewares\UncaughtExceptionStopper;
 use ABC\Tests\Fixtures\BrokenHandler;
 use ABC\Tests\Fixtures\SuccessfulHandler;
+use LogicException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
-use TypeError;
 use UMA\DIC\Container;
 
-final class ExceptionTrapperTest extends TestCase
+final class UncaughtExceptionStopperTest extends TestCase
 {
     private Container $container;
 
@@ -52,7 +51,7 @@ final class ExceptionTrapperTest extends TestCase
 
     public function testHappyPath(): void
     {
-        $response = (new ExceptionTrapper($this->container))->process(
+        $response = (new UncaughtExceptionStopper($this->container))->process(
             new ServerRequest('GET', '/'),
             new SuccessfulHandler
         );
@@ -64,7 +63,7 @@ final class ExceptionTrapperTest extends TestCase
 
     public function testExceptionPath(): void
     {
-        $response = (new ExceptionTrapper($this->container))->process(
+        $response = (new UncaughtExceptionStopper($this->container))->process(
             new ServerRequest('GET', '/'),
             new BrokenHandler
         );
@@ -76,23 +75,23 @@ final class ExceptionTrapperTest extends TestCase
 
     public function testExceptionHandlerServiceIsNotDefined(): void
     {
-        $this->expectException(NotFoundExceptionInterface::class);
+        $this->expectException(LogicException::class);
 
-        (new ExceptionTrapper(new Container))->process(
+        (new UncaughtExceptionStopper(new Container))->process(
             new ServerRequest('GET', '/'),
-            new BrokenHandler
+            new BrokenHandler()
         );
     }
 
     public function testExceptionHandlerServiceIsNotARequestHandler(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(LogicException::class);
 
         $this->container->set(Constants::EXCEPTION_HANDLER->value, 'WTF is this shit, I need a RequestHandlerInterface instance');
 
-        (new ExceptionTrapper($this->container))->process(
+        (new UncaughtExceptionStopper($this->container))->process(
             new ServerRequest('GET', '/'),
-            new BrokenHandler
+            new BrokenHandler()
         );
     }
 }

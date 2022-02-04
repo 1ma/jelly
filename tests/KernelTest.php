@@ -13,7 +13,6 @@ use ABC\Tests\Fixtures\SuccessfulHandler;
 use ABC\Tests\Fixtures\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
-use Nyholm\Psr7Server\ServerRequestCreator;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message;
@@ -33,18 +32,13 @@ final class KernelTest extends TestCase
             Constants::NOT_FOUND_HANDLER->value => new Handlers\EmptyResponse($factory, 404),
             Constants::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
             Constants::EXCEPTION_HANDLER->value => new Handlers\DebugException($factory, $factory),
+            SecurityHeaders::class => new SecurityHeaders(),
+            ServerCloak::class => new ServerCloak('api.example.com'),
             'index' => new SuccessfulHandler,
             'boom' => new BrokenHandler
         ]);
 
-        $creator = new ServerRequestCreator(
-            $factory,
-            $factory,
-            $factory,
-            $factory
-        );
-
-        $this->kernel = new Kernel($this->container, $creator);
+        $this->kernel = new Kernel($this->container);
     }
 
     public function testHappyPath(): void
@@ -107,10 +101,10 @@ final class KernelTest extends TestCase
         );
     }
 
-    public function testKernelDecoration(): void
+    public function testKernelWrapping(): void
     {
         $this->kernel->GET('/', 'index');
-        $this->kernel->decorate(new SecurityHeaders);
+        $this->kernel->wrap(SecurityHeaders::class);
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/')),
@@ -130,8 +124,7 @@ final class KernelTest extends TestCase
 
     public function testResolvedHandlerAndArgsAreAvailableToMiddlewares(): void
     {
-        $this->kernel->GET('/hello/{name}', 'index');
-        $this->kernel->decorate(new class($this) implements Server\MiddlewareInterface {
+        $this->container->set('adhoc_middleware', new class($this) implements Server\MiddlewareInterface {
             private readonly TestCase $phpunit;
 
             public function __construct(TestCase $phpunit)
@@ -147,6 +140,9 @@ final class KernelTest extends TestCase
                 return $handler->handle($request);
             }
         });
+
+        $this->kernel->GET('/hello/{name}', 'index');
+        $this->kernel->wrap('adhoc_middleware');
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/hello/joe')),
@@ -164,7 +160,7 @@ final class KernelTest extends TestCase
     public function testServerCloakMiddleware(): void
     {
         $this->kernel->GET('/', 'index');
-        $this->kernel->decorate(new ServerCloak('api.example.com'));
+        $this->kernel->wrap(ServerCloak::class);
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/')),

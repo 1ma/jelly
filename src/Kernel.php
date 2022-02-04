@@ -6,12 +6,15 @@ namespace ABC;
 
 use ABC\Handlers;
 use ABC\Internal;
-use ABC\Middlewares;
+use ABC\Middlewares\UncaughtExceptionStopper;
 use LogicException;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
 use Psr\Http\Server;
+use TypeError;
+use function array_map;
 use function fastcgi_finish_request;
 use function function_exists;
 use function header;
@@ -29,20 +32,17 @@ final class Kernel implements Server\RequestHandlerInterface
      */
     private const DEFAULT_CHUNK_SIZE = 8 * (1024 ** 2);
 
-    /**
-     * @var Server\MiddlewareInterface[]
-     */
-    private array $middlewares;
+    private readonly Internal\MiddlewareChainResolver $chainResolver;
     private readonly Internal\RouteCollection $routes;
     private readonly ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
-        Internal\Assert::hasService($container, Constants::NOT_FOUND_HANDLER->value, '"Not Found" handler service missing');
-        Internal\Assert::hasService($container, Constants::BAD_METHOD_HANDLER->value, '"Bad Method" handler service missing');
-        Internal\Assert::hasService($container, Constants::EXCEPTION_HANDLER->value, 'Exception handler service missing');
+        Internal\Assert::hasService($container, Constants::NOT_FOUND_HANDLER->value, 'Mandatory NOT_FOUND_HANDLER service missing');
+        Internal\Assert::hasService($container, Constants::BAD_METHOD_HANDLER->value, 'Mandatory BAD_METHOD_HANDLER service missing');
+        Internal\Assert::hasService($container, Constants::EXCEPTION_HANDLER->value, 'Mandatory EXCEPTION_HANDLER service missing');
 
-        $this->middlewares = [];
+        $this->chainResolver = new Internal\MiddlewareChainResolver();
         $this->routes = new Internal\RouteCollection;
         $this->container = $container;
     }
@@ -92,17 +92,16 @@ final class Kernel implements Server\RequestHandlerInterface
      */
     public function map(string $method, string $pattern, string $service): void
     {
-        Internal\Assert::hasService($this->container, $service, "$service is not registered as a service");
+        Internal\Assert::hasService($this->container, $service);
 
         $this->routes->addRoute($method, $pattern, $service);
     }
 
-    /**
-     * Wraps the Kernel with $middleware.
-     */
-    public function decorate(Server\MiddlewareInterface $middleware): void
+    public function wrap(string $service): void
     {
-        $this->middlewares[] = $middleware;
+        Internal\Assert::hasService($this->container, $service);
+
+        $this->chainResolver->pushGlobalMiddleware($service);
     }
 
     /**
@@ -110,15 +109,21 @@ final class Kernel implements Server\RequestHandlerInterface
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
-        return Handlers\MiddlewareStack::compose(
-            Internal\Assert::isRequestHandler(
-                $this->container->get((new Internal\RequestHandlerResolver($this->routes))->resolve($request))
-            ),
-            new Middlewares\ExceptionTrapper(
-                $this->container
-            ),
-            ...$this->middlewares
-        )->handle($request);
+        $handlerName = (new Internal\RequestHandlerResolver($this->routes))->resolve($request);
+        $middlewareChainNames = $this->chainResolver->resolve($handlerName);
+
+        try {
+            $handler = Internal\Assert::isRequestHandler($this->container->get($handlerName));
+            $middlewareChain = array_map(function (string $name): Server\MiddlewareInterface {
+                return $this->container->get($name);
+            }, $middlewareChainNames);
+        } catch (ContainerExceptionInterface|TypeError $e) {
+            throw new LogicException(message: $e->getMessage(), previous: $e);
+        }
+
+        $middlewareChain[] = new UncaughtExceptionStopper($this->container);
+
+        return Handlers\ExecutionStack::compose($handler, ...$middlewareChain)->handle($request);
     }
 
     /**
