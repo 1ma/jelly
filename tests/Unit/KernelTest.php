@@ -11,7 +11,6 @@ use ABC\Middlewares\SecurityHeaders;
 use ABC\Middlewares\ServerCloak;
 use ABC\Tests\Fixtures\HelloHandler;
 use ABC\Tests\Fixtures\BrokenHandler;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -27,11 +26,9 @@ final class KernelTest extends TestCase
 
     protected function setUp(): void
     {
-        $factory = new Psr17Factory();
-
         $this->container = new Container([
             Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\GenericResponse(new Response(404)),
-            Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
+            Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\GenericResponse(new Response(405, ['Allow' => 'GET, POST, PUT, UPDATE, DELETE, OPTIONS'])),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
             'index' => new HelloHandler,

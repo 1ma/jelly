@@ -13,11 +13,8 @@ final class GenericResponseTest extends TestCase
 {
     public function testIt(): void
     {
-        $emptyResponseHandler = new Handlers\GenericResponse(new Response(418));
+        $handler = new Handlers\GenericResponse($response = new Response(418));
 
-        $response = $emptyResponseHandler->handle(new ServerRequest('GET', '/'));
-
-        self::assertSame(418, $response->getStatusCode());
-        self::assertSame('', (string) $response->getBody());
+        self::assertSame($response, $handler->handle(new ServerRequest('GET', '/')));
     }
 }
