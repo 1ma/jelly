@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ABC\Tests;
 
+use ABC\Constants;
 use ABC\Handlers;
 use ABC\Kernel;
 use ABC\Middlewares\SecurityHeaders;
@@ -29,9 +30,9 @@ final class KernelTest extends TestCase
         $factory = new Psr17Factory();
 
         $this->container = new Container([
-            Kernel::NOT_FOUND_HANDLER_SERVICE => new Handlers\EmptyResponse($factory, 404),
-            Kernel::BAD_METHOD_HANDLER_SERVICE => new Handlers\MethodNotAllowed($factory),
-            Kernel::EXCEPTION_HANDLER_SERVICE => new Handlers\DebugException($factory, $factory),
+            Constants::NOT_FOUND_HANDLER->value => new Handlers\EmptyResponse($factory, 404),
+            Constants::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
+            Constants::EXCEPTION_HANDLER->value => new Handlers\DebugException($factory, $factory),
             'index' => new SuccessfulHandler,
             'boom' => new BrokenHandler
         ]);
@@ -96,7 +97,7 @@ final class KernelTest extends TestCase
             'Whoops!', false
         );
 
-        $this->container->set(Kernel::EXCEPTION_HANDLER_SERVICE, new Handlers\EmptyResponse(new Psr17Factory, 503));
+        $this->container->set(Constants::EXCEPTION_HANDLER->value, new Handlers\EmptyResponse(new Psr17Factory, 503));
 
         self::assertExpectedResponse(
             $this->kernel->handle(new ServerRequest('GET', '/')),
@@ -140,8 +141,8 @@ final class KernelTest extends TestCase
 
             public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
             {
-                $this->phpunit::assertSame('index', $request->getAttribute(Kernel::HANDLER));
-                $this->phpunit::assertSame(['name' => 'joe'], $request->getAttribute(Kernel::ARGS));
+                $this->phpunit::assertSame('index', $request->getAttribute(Constants::HANDLER->value));
+                $this->phpunit::assertSame(['name' => 'joe'], $request->getAttribute(Constants::ARGS->value));
 
                 return $handler->handle($request);
             }

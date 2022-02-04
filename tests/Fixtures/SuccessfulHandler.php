@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ABC\Tests\Fixtures;
 
-use ABC\Kernel;
+use ABC\Constants;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,7 +17,7 @@ final class SuccessfulHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $name = $request->getAttribute(Kernel::ARGS)['name'] ?? null;
+        $name = $request->getAttribute(Constants::ARGS->value)['name'] ?? null;
 
         return new Response(200, ['Content-Type' => 'text/plain'], null === $name ? 'Hello.' : "Hello $name.");
     }

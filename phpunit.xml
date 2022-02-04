@@ -19,6 +19,7 @@
         <report>
             <clover outputFile="build/phpunit/clover.xml"/>
             <html outputDirectory="build/phpunit"/>
+            <text outputFile="php://stdout" showOnlySummary="true"/>
         </report>
     </coverage>
 

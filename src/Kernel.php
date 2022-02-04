@@ -21,72 +21,6 @@ use function sprintf;
 final class Kernel implements Server\RequestHandlerInterface
 {
     /**
-     * This is a service name that the framework expects to map to a RequestHandlerInterface
-     * that will handle Not Found (HTTP 404) errors.
-     */
-    public const NOT_FOUND_HANDLER_SERVICE = 'abc.404';
-
-    /**
-     * This is a service name that the framework expects to map to a RequestHandlerInterface
-     * that will handle Method Not Allowed (HTTP 405) errors.
-     */
-    public const BAD_METHOD_HANDLER_SERVICE = 'abc.405';
-
-    /**
-     * This is a service name that the framework expects to map to a RequestHandlerInterface
-     * that will handle any uncaught exceptions thrown by the application.
-     */
-    public const EXCEPTION_HANDLER_SERVICE = 'abc.500';
-
-    /**
-     * If an uncaught exception is captured, a Method Not Found error occurs, or a
-     * Not Found error occurs, the framework will attach the appropriate HTTP error
-     * code to the request under this attribute key.
-     *
-     * It will either be 500, 405 or 404 respectively.
-     */
-    public const ERROR_TYPE = 'abc.error';
-
-    /**
-     * If an HTTP 405 Method Not Allowed error occurs, the framework will attach the list
-     * of valid HTTP verbs to the request under this attribute key.
-     *
-     * A RequestHandlerInterface stored in the container as Kernel::BAD_METHOD_HANDLER_SERVICE
-     * can rely on the fact that the request it receives will have this attribute, and its
-     * value will always be a non-empty array of strings, such as ['GET', 'PUT', 'DELETE'].
-     *
-     * @see Handlers\MethodNotAllowed for an example
-     */
-    public const ALLOWED_METHODS = 'abc.allowed_methods';
-
-    /**
-     * If the framework traps an uncaught exception it will be attached to the request
-     * under this attribute key.
-     *
-     * A RequestHandlerInterface stored in the container as Kernel::EXCEPTION_HANDLER_SERVICE
-     * can rely on the fact that the request it receives will have this attribute, and its
-     * value will always be an exception.
-     *
-     * @see Middlewares\ExceptionTrapper for an example
-     */
-    public const EXCEPTION = 'abc.exception';
-
-    /**
-     * On every successfully routed request, the framework will attach its arguments
-     * under this attribute key.
-     *
-     * Arguments are the named placeholders that can be defined in FastRoute's
-     * path declarations, such as '/hello/{name}'.
-     */
-    public const ARGS = 'abc.args';
-
-    /**
-     * On every successfully routed request, the framework will attach the service
-     * name of the designed request handler under this attribute key.
-     */
-    public const HANDLER = 'abc.handler';
-
-    /**
      * The default behaviour is emitting the response in chunks of at most 8 MiB at a time.
      *
      * This is to avoid exhausting the memory available to the PHP process.
@@ -104,9 +38,9 @@ final class Kernel implements Server\RequestHandlerInterface
 
     public function __construct(ContainerInterface $container)
     {
-        Internal\Assert::hasService($container, self::NOT_FOUND_HANDLER_SERVICE, '"Not Found" handler service missing');
-        Internal\Assert::hasService($container, self::BAD_METHOD_HANDLER_SERVICE, '"Bad Method" handler service missing');
-        Internal\Assert::hasService($container, self::EXCEPTION_HANDLER_SERVICE, 'Exception handler service missing');
+        Internal\Assert::hasService($container, Constants::NOT_FOUND_HANDLER->value, '"Not Found" handler service missing');
+        Internal\Assert::hasService($container, Constants::BAD_METHOD_HANDLER->value, '"Bad Method" handler service missing');
+        Internal\Assert::hasService($container, Constants::EXCEPTION_HANDLER->value, 'Exception handler service missing');
 
         $this->middlewares = [];
         $this->routes = new Internal\RouteCollection;
@@ -190,10 +124,7 @@ final class Kernel implements Server\RequestHandlerInterface
      * handles it and calls the Output service to send
      * the response back.
      */
-    public function run(
-        ServerRequestCreatorInterface $factory,
-        int $chunkSize = self::DEFAULT_CHUNK_SIZE
-    ): void
+    public function run(ServerRequestCreatorInterface $factory): void
     {
         $response = $this->handle($factory->fromGlobals());
 
@@ -215,6 +146,9 @@ final class Kernel implements Server\RequestHandlerInterface
         // Only attempt to echo the response when neither the
         // X-SendFile nor X-Accel-Redirect headers are present in the response
         if (!$response->hasHeader('X-Sendfile') && !$response->hasHeader('X-Accel-Redirect')) {
+            $chunkSize = $this->container->has(Constants::ECHO_CHUNK_SIZE->value) ?
+                $this->container->get(Constants::ECHO_CHUNK_SIZE->value) : self::DEFAULT_CHUNK_SIZE;
+
             $stream = $response->getBody();
             $stream->rewind();
 

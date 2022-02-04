@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ABC\Internal;
 
+use ABC\Constants;
 use ABC\Internal;
-use ABC\Kernel;
 use FastRoute;
 use Psr\Container;
 use Psr\Http\Message;
@@ -41,25 +41,22 @@ final class RequestRouter
         );
 
         $service = match ($routeInfo[0]) {
-            FastRoute\Dispatcher::NOT_FOUND => Kernel::NOT_FOUND_HANDLER_SERVICE,
-            FastRoute\Dispatcher::METHOD_NOT_ALLOWED => Kernel::BAD_METHOD_HANDLER_SERVICE,
+            FastRoute\Dispatcher::NOT_FOUND => Constants::NOT_FOUND_HANDLER->value,
+            FastRoute\Dispatcher::METHOD_NOT_ALLOWED => Constants::BAD_METHOD_HANDLER->value,
             FastRoute\Dispatcher::FOUND => $routeInfo[1]
         };
 
         $request = match ($service) {
-            Kernel::NOT_FOUND_HANDLER_SERVICE =>
-                $request
-                    ->withAttribute(Kernel::ERROR_TYPE, 404),
+            Constants::NOT_FOUND_HANDLER->value => $request,
 
-            Kernel::BAD_METHOD_HANDLER_SERVICE =>
+            Constants::BAD_METHOD_HANDLER->value =>
                 $request
-                    ->withAttribute(Kernel::ERROR_TYPE, 405)
-                    ->withAttribute(Kernel::ALLOWED_METHODS, $routeInfo[1]),
+                    ->withAttribute(Constants::ALLOWED_METHODS->value, $routeInfo[1]),
 
             default =>
                 $request
-                    ->withAttribute(Kernel::HANDLER, $routeInfo[1])
-                    ->withAttribute(Kernel::ARGS, $routeInfo[2])
+                    ->withAttribute(Constants::HANDLER->value, $routeInfo[1])
+                    ->withAttribute(Constants::ARGS->value, $routeInfo[2])
         };
 
         try {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ABC\Tests\Internal;
 
+use ABC\Constants;
 use ABC\Internal\RequestRouter;
 use ABC\Internal\RouteCollection;
-use ABC\Kernel;
 use LogicException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -16,6 +16,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use UMA\DIC\Container;
+use function implode;
+use function sprintf;
 
 final class RequestRouterTest extends TestCase
 {
@@ -36,18 +38,18 @@ final class RequestRouterTest extends TestCase
 
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    $handler = $request->getAttribute(Kernel::HANDLER);
-                    $args = $request->getAttribute(Kernel::ARGS);
+                    $handler = $request->getAttribute(Constants::HANDLER->value);
+                    $args = $request->getAttribute(Constants::ARGS->value);
 
                     $this->phpunit::assertSame('hello_handler', $handler);
                     $this->phpunit::assertSame(['name' => 'abc'], $args);
 
-                    return new Response(200, [], \sprintf('Hello, %s.', $args['name']));
+                    return new Response(200, [], sprintf('Hello, %s.', $args['name']));
                 }
             };
         });
 
-        $this->container->set('bogus_handler', function(): RequestHandlerInterface {
+        $this->container->set('bogus_handler', static function(): RequestHandlerInterface {
             return new class implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
@@ -56,27 +58,16 @@ final class RequestRouterTest extends TestCase
             };
         });
 
-        $this->container->set(Kernel::NOT_FOUND_HANDLER_SERVICE, function(): RequestHandlerInterface {
-            return new class($this) implements RequestHandlerInterface {
-                private readonly TestCase $phpunit;
-
-                public function __construct(TestCase $phpunit)
-                {
-                    $this->phpunit = $phpunit;
-                }
-
+        $this->container->set(Constants::NOT_FOUND_HANDLER->value, static function(): RequestHandlerInterface {
+            return new class implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    $errorType = $request->getAttribute(Kernel::ERROR_TYPE);
-
-                    $this->phpunit::assertSame(404, $errorType);
-
-                    return new Response($errorType, [], \sprintf('Route %s not found', $request->getUri()->getPath()));
+                    return new Response(404, [], sprintf('Route %s not found', $request->getUri()->getPath()));
                 }
             };
         });
 
-        $this->container->set(Kernel::BAD_METHOD_HANDLER_SERVICE, function(): RequestHandlerInterface {
+        $this->container->set(Constants::BAD_METHOD_HANDLER->value, function(): RequestHandlerInterface {
             return new class($this) implements RequestHandlerInterface {
                 private readonly TestCase $phpunit;
 
@@ -87,14 +78,12 @@ final class RequestRouterTest extends TestCase
 
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    $errorType = $request->getAttribute(Kernel::ERROR_TYPE);
-                    $allowedMethods = $request->getAttribute(Kernel::ALLOWED_METHODS);
+                    $allowedMethods = $request->getAttribute(Constants::ALLOWED_METHODS->value);
 
-                    $this->phpunit::assertSame(405, $errorType);
                     $this->phpunit::assertIsArray($allowedMethods);
                     $this->phpunit::assertNotEmpty($allowedMethods);
 
-                    return new Response($errorType, ['Allow' => \implode(', ', $allowedMethods)]);
+                    return new Response(405, ['Allow' => implode(', ', $allowedMethods)]);
                 }
             };
         });
@@ -106,8 +95,8 @@ final class RequestRouterTest extends TestCase
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
         self::assertFalse($this->container->resolved('hello_handler'));
-        self::assertFalse($this->container->resolved(Kernel::NOT_FOUND_HANDLER_SERVICE));
-        self::assertFalse($this->container->resolved(Kernel::BAD_METHOD_HANDLER_SERVICE));
+        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('GET', '/hello/abc');
         $response = (new RequestRouter($this->container, $routes))
@@ -115,8 +104,8 @@ final class RequestRouterTest extends TestCase
             ->handle($request);
 
         self::assertTrue($this->container->resolved('hello_handler'));
-        self::assertFalse($this->container->resolved(Kernel::NOT_FOUND_HANDLER_SERVICE));
-        self::assertFalse($this->container->resolved(Kernel::BAD_METHOD_HANDLER_SERVICE));
+        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('Hello, abc.', (string) $response->getBody());
@@ -128,8 +117,8 @@ final class RequestRouterTest extends TestCase
         $routes->addRoute('GET', '/hello/{name}', 'bogus_handler');
 
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertFalse($this->container->resolved(Kernel::NOT_FOUND_HANDLER_SERVICE));
-        self::assertFalse($this->container->resolved(Kernel::BAD_METHOD_HANDLER_SERVICE));
+        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('GET', '/bye/abc');
         $response = (new RequestRouter($this->container, $routes))
@@ -137,8 +126,8 @@ final class RequestRouterTest extends TestCase
             ->handle($request);
 
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertTrue($this->container->resolved(Kernel::NOT_FOUND_HANDLER_SERVICE));
-        self::assertFalse($this->container->resolved(Kernel::BAD_METHOD_HANDLER_SERVICE));
+        self::assertTrue($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('Route /bye/abc not found', (string) $response->getBody());
@@ -152,8 +141,8 @@ final class RequestRouterTest extends TestCase
 
         self::assertFalse($this->container->resolved('hello_handler'));
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertFalse($this->container->resolved(Kernel::NOT_FOUND_HANDLER_SERVICE));
-        self::assertFalse($this->container->resolved(Kernel::BAD_METHOD_HANDLER_SERVICE));
+        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
+        self::assertFalse($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         $request = new ServerRequest('DELETE', '/hello/abc');
         $response = (new RequestRouter($this->container, $routes))
@@ -162,8 +151,8 @@ final class RequestRouterTest extends TestCase
 
         self::assertFalse($this->container->resolved('hello_handler'));
         self::assertFalse($this->container->resolved('bogus_handler'));
-        self::assertFalse($this->container->resolved(Kernel::NOT_FOUND_HANDLER_SERVICE));
-        self::assertTrue($this->container->resolved(Kernel::BAD_METHOD_HANDLER_SERVICE));
+        self::assertFalse($this->container->resolved(Constants::NOT_FOUND_HANDLER->value));
+        self::assertTrue($this->container->resolved(Constants::BAD_METHOD_HANDLER->value));
 
         self::assertSame(405, $response->getStatusCode());
         self::assertTrue($response->hasHeader('Allow'));
@@ -201,7 +190,7 @@ final class RequestRouterTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
 
-        $this->container->set(Kernel::NOT_FOUND_HANDLER_SERVICE, 123);
+        $this->container->set(Constants::NOT_FOUND_HANDLER->value, 123);
 
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
@@ -216,7 +205,7 @@ final class RequestRouterTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
 
-        $this->container->set(Kernel::BAD_METHOD_HANDLER_SERVICE, 123);
+        $this->container->set(Constants::BAD_METHOD_HANDLER->value, 123);
 
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');

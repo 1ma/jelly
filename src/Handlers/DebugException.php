@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ABC\Handlers;
 
-use ABC\Kernel;
+use ABC\Constants;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use Throwable;
@@ -31,7 +31,7 @@ final class DebugException implements Server\RequestHandlerInterface
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
         /** @var Throwable $exception */
-        $exception = $request->getAttribute(Kernel::EXCEPTION);
+        $exception = $request->getAttribute(Constants::EXCEPTION->value);
 
         $body = sprintf(
             "Exception Type: %s\nMessage: %s\nStack Trace:\n#! %s(%s)\n%s\n",
