@@ -18,7 +18,7 @@ enum Attributes: string
      *
      * The attribute is always a string.
      */
-    case HANDLER = 'abc.key.handler';
+    case HANDLER = 'abc.attributes.handler';
 
     /**
      * On successful dynamic route matches the framework will set a request attribute
@@ -28,7 +28,7 @@ enum Attributes: string
      *
      * The attribute is a (possibly empty) hashmap of string => string entries.
      */
-    case ARGS = 'abc.key.args';
+    case ARGS = 'abc.attributes.args';
 
     /**
      * On Method Not Allowed errors (HTTP 405) the framework will set a request attribute
@@ -38,5 +38,5 @@ enum Attributes: string
      *
      * The attribute is a non-empty list of strings.
      */
-    case ALLOWED_METHODS = 'abc.key.allowed_methods';
+    case ALLOWED_METHODS = 'abc.attributes.allowed_methods';
 }

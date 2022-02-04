@@ -13,7 +13,7 @@ namespace ABC\Constants;
 enum Settings: string
 {
     /**
-     * A service that if present must resolve to a positive integer.
+     * The name of a service that if present must resolve to a positive integer.
      *
      * The default chunk size is 8 MiB (8388608 bytes).
      *
@@ -23,11 +23,11 @@ enum Settings: string
      *
      * @see https://www.php.net/manual/en/ini.core.php#ini.memory-limit
      */
-    case ECHO_CHUNK_SIZE = 'abc.option.chunk_size';
+    case ECHO_CHUNK_SIZE = 'abc.settings.chunk_size';
 
     /**
-     * A service that if present must resolve to a string that references a writable
-     * path in the filesystem.
+     * The name of a service that if present must resolve to a string that references
+     * a writable path in the filesystem.
      *
      * The default cache path is null (i.e. the framework doesn't use this feature).
      *
@@ -41,5 +41,5 @@ enum Settings: string
      *
      * @example /tmp/my-api/cached-routes.php
      */
-    case ROUTER_CACHE_PATH = 'abc.option.router_cache_path';
+    case ROUTER_CACHE_PATH = 'abc.settings.router_cache_path';
 }
