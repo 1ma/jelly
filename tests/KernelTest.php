@@ -31,7 +31,6 @@ final class KernelTest extends TestCase
         $this->container = new Container([
             Constants::NOT_FOUND_HANDLER->value => new Handlers\EmptyResponse($factory, 404),
             Constants::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
-            Constants::EXCEPTION_HANDLER->value => new Handlers\DebugException($factory, $factory),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
             'index' => new SuccessfulHandler,
@@ -76,27 +75,6 @@ final class KernelTest extends TestCase
             $this->kernel->handle(new ServerRequest('PATCH', '/')),
             405,
             ['Allow' => ['GET, POST, PUT, UPDATE, DELETE, OPTIONS']],
-            ''
-        );
-    }
-
-    public function testExceptionHandler(): void
-    {
-        $this->kernel->GET('/', 'boom');
-
-        self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
-            500,
-            ['Content-Type' => ['text/plain']],
-            'Whoops!', false
-        );
-
-        $this->container->set(Constants::EXCEPTION_HANDLER->value, new Handlers\EmptyResponse(new Psr17Factory, 503));
-
-        self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
-            503,
-            [],
             ''
         );
     }

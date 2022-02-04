@@ -6,7 +6,6 @@ namespace ABC;
 
 use ABC\Handlers;
 use ABC\Internal;
-use ABC\Middlewares\UncaughtExceptionStopper;
 use LogicException;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerExceptionInterface;
@@ -40,7 +39,6 @@ final class Kernel implements Server\RequestHandlerInterface
     {
         Internal\Assert::hasService($container, Constants::NOT_FOUND_HANDLER->value, 'Mandatory NOT_FOUND_HANDLER service missing');
         Internal\Assert::hasService($container, Constants::BAD_METHOD_HANDLER->value, 'Mandatory BAD_METHOD_HANDLER service missing');
-        Internal\Assert::hasService($container, Constants::EXCEPTION_HANDLER->value, 'Mandatory EXCEPTION_HANDLER service missing');
 
         $this->chainResolver = new Internal\MiddlewareChainResolver();
         $this->routes = new Internal\RouteCollection;
@@ -120,8 +118,6 @@ final class Kernel implements Server\RequestHandlerInterface
         } catch (ContainerExceptionInterface|TypeError $e) {
             throw new LogicException(message: $e->getMessage(), previous: $e);
         }
-
-        $middlewareChain[] = new UncaughtExceptionStopper($this->container);
 
         return Handlers\ExecutionStack::compose($handler, ...$middlewareChain)->handle($request);
     }

@@ -84,20 +84,6 @@ enum Constants: string
      */
     case BAD_METHOD_HANDLER = 'abc.service.bad_method_handler';
 
-    /**
-     * A service that must resolve to a PSR-15 RequestHandlerInterface.
-     *
-     * This is a fallback handler that is called when an uncaught exception slips
-     * through the user code in order to prevent it from crashing the whole process.
-     *
-     * The request will contain the EXCEPTION attribute with the uncaught
-     * exception that triggered the handler.
-     *
-     * These handlers should emit an HTTP 500 response and track the
-     * exception however they see fit.
-     */
-    case EXCEPTION_HANDLER = 'abc.service.exception_handler';
-
     /*****************************************************************************
      * Framework Knobs                                                           *
      *                                                                           *
