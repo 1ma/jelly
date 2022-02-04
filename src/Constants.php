@@ -98,12 +98,12 @@ enum Constants: string
      */
     case EXCEPTION_HANDLER = 'abc.service.exception_handler';
 
-    /**************************************************************************
-     * Framework Knobs                                                        *
-     *                                                                        *
-     * These are values or services that can be defined in the PSR-11 but are *
-     * optional. If present they allow tuning some framework settings.        *
-     **************************************************************************/
+    /*****************************************************************************
+     * Framework Knobs                                                           *
+     *                                                                           *
+     * These are values or services that can be defined in the container but are *
+     * optional. If present they allow tuning some framework settings.           *
+     *****************************************************************************/
 
     /**
      * A service that if present must resolve to a positive integer.
@@ -134,5 +134,5 @@ enum Constants: string
      *
      * @example /tmp/my-api/cached-routes.php
      */
-    case ROUTER_CACHE_PATH = 'abc.option.router.cache_path';
+    case ROUTER_CACHE_PATH = 'abc.option.router_cache_path';
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ABC\Internal;
 
-use InvalidArgumentException;
+use LogicException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TypeError;
@@ -15,12 +15,12 @@ use TypeError;
 final class Assert
 {
     /**
-     * @throws InvalidArgumentException
+     * @throws LogicException
      */
     public static function hasService(ContainerInterface $container, string $service, string $message = ''): void
     {
         if (!$container->has($service)) {
-            throw new InvalidArgumentException($message);
+            throw new LogicException($message);
         }
     }
 

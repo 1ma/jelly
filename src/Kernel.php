@@ -7,7 +7,7 @@ namespace ABC;
 use ABC\Handlers;
 use ABC\Internal;
 use ABC\Middlewares;
-use InvalidArgumentException;
+use LogicException;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
@@ -48,7 +48,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the container does not have $service
+     * @throws LogicException If the container does not have $service
      */
     public function GET(string $pattern, string $service): void
     {
@@ -56,7 +56,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the container does not have $service
+     * @throws LogicException If the container does not have $service
      */
     public function POST(string $pattern, string $service): void
     {
@@ -64,7 +64,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the container does not have $service
+     * @throws LogicException If the container does not have $service
      */
     public function PUT(string $pattern, string $service): void
     {
@@ -72,7 +72,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the container does not have $service
+     * @throws LogicException If the container does not have $service
      */
     public function UPDATE(string $pattern, string $service): void
     {
@@ -80,7 +80,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the container does not have $service
+     * @throws LogicException If the container does not have $service
      */
     public function DELETE(string $pattern, string $service): void
     {
@@ -88,7 +88,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the container does not have $service
+     * @throws LogicException If the container does not have $service
      */
     public function map(string $method, string $pattern, string $service): void
     {

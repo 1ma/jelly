@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 use UMA\DIC\Container;
 use function implode;
 use function sprintf;
@@ -161,7 +160,7 @@ final class RequestRouterTest extends TestCase
 
     public function testNotFoundHandlerServiceNotDefined(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(LogicException::class);
 
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
@@ -174,7 +173,7 @@ final class RequestRouterTest extends TestCase
 
     public function testBadMethodHandlerServiceNotDefined(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(LogicException::class);
 
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
@@ -188,7 +187,7 @@ final class RequestRouterTest extends TestCase
 
     public function testNotFoundHandlerServiceIsNotARequestHandler(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(LogicException::class);
 
         $this->container->set(Constants::NOT_FOUND_HANDLER->value, 123);
 
@@ -203,7 +202,7 @@ final class RequestRouterTest extends TestCase
 
     public function testBadMethodHandlerServiceIsNotARequestHandler(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(LogicException::class);
 
         $this->container->set(Constants::BAD_METHOD_HANDLER->value, 123);
 

@@ -7,6 +7,7 @@ namespace ABC\Internal;
 use ABC\Constants;
 use ABC\Internal;
 use FastRoute;
+use LogicException;
 use Psr\Container;
 use Psr\Http\Message;
 use Psr\Http\Server;
@@ -31,7 +32,7 @@ final class RequestRouter
     }
 
     /**
-     * @throws RuntimeException If the resolved service is not an implementation of the RequestHandlerInterface
+     * @throws LogicException If the resolved service is not an implementation of the RequestHandlerInterface
      */
     public function resolve(Message\ServerRequestInterface &$request): Server\RequestHandlerInterface
     {
@@ -62,9 +63,9 @@ final class RequestRouter
         try {
             return Internal\Assert::isRequestHandler($this->container->get($service));
         } catch (Container\ContainerExceptionInterface) {
-            throw new RuntimeException("Error retrieving '$service' from container");
+            throw new LogicException("Error retrieving '$service' from container");
         } catch (TypeError) {
-            throw new RuntimeException("'$service' service does not implement RequestHandlerInterface");
+            throw new LogicException("'$service' service does not implement RequestHandlerInterface");
         }
     }
 }
