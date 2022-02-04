@@ -39,13 +39,4 @@ enum Attributes: string
      * The attribute is a non-empty list of strings.
      */
     case ALLOWED_METHODS = 'abc.key.allowed_methods';
-
-    /**
-     * If an uncaught exception slips through your application the framework will catch it
-     * and reroute the request to the EXCEPTION_HANDLER service. In addition, the framework
-     * will set a request attribute with the caught exception under this name.
-     *
-     * The attribute is a descendant of PHP's builtin Throwable interface.
-     */
-    case EXCEPTION = 'abc.key.exception';
 }
