@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Handlers;
+namespace ABC\Tests\Unit\Handlers;
 
 use ABC\Handlers;
 use Nyholm\Psr7\Factory\Psr17Factory;

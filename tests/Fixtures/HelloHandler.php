@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * A fixture request handler that simulates a successful request.
  */
-final class SuccessfulHandler implements RequestHandlerInterface
+final class HelloHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

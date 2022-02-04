@@ -7,7 +7,7 @@ namespace ABC\Constants;
 /**
  * Attribute Keys
  *
- * These are the names of the attributes that the framework may set on
+ * These are the names of the attribute keys that the framework may set on
  * the request on certain situations.
  */
 enum Attributes: string

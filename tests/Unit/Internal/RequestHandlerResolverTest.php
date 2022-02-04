@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Internal;
+namespace ABC\Tests\Unit\Internal;
 
 use ABC\Constants;
 use ABC\Internal\RequestHandlerResolver;

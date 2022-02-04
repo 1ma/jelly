@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests;
+namespace ABC\Tests\Unit;
 
 use ABC\Constants;
 use ABC\Handlers;
 use ABC\Kernel;
 use ABC\Middlewares\SecurityHeaders;
 use ABC\Middlewares\ServerCloak;
-use ABC\Tests\Fixtures\SuccessfulHandler;
+use ABC\Tests\Fixtures\HelloHandler;
 use ABC\Tests\Fixtures\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
@@ -33,7 +33,7 @@ final class KernelTest extends TestCase
             Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\MethodNotAllowed($factory),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
-            'index' => new SuccessfulHandler,
+            'index' => new HelloHandler,
             'boom' => new BrokenHandler
         ]);
 
