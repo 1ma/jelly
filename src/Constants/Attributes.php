@@ -21,6 +21,16 @@ enum Attributes: string
     case HANDLER = 'abc.attributes.handler';
 
     /**
+     * On successful dynamic route matches the framework will set a request attribute
+     * with this name to the array of values that matched the route.
+     *
+     * @example "GET /hello/tron" matches "GET /hello/{name}", so ARGS equals ['name' => 'tron']
+     *
+     * The attribute is a (possibly empty) hashmap of string => string entries.
+     */
+    case ARGS = 'abc.attributes.args';
+
+    /**
      * On successful route matches the framework will set a request attribute
      * with this name to the list of middleware service names that are
      * to process this request. You can use this information to check that the
@@ -37,16 +47,6 @@ enum Attributes: string
      * The attribute is a (possible empty) list of strings.
      */
     case MIDDLEWARE_CHAIN = 'abc.attributes.middleware_chain';
-
-    /**
-     * On successful dynamic route matches the framework will set a request attribute
-     * with this name to the array of values that matched the route.
-     *
-     * @example "GET /hello/tron" matches "GET /hello/{name}", so ARGS equals ['name' => 'tron']
-     *
-     * The attribute is a (possibly empty) hashmap of string => string entries.
-     */
-    case ARGS = 'abc.attributes.args';
 
     /**
      * On Method Not Allowed errors (HTTP 405) the framework will set a request attribute
