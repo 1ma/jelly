@@ -24,22 +24,4 @@ enum Settings: string
      * @see https://www.php.net/manual/en/ini.core.php#ini.memory-limit
      */
     case ECHO_CHUNK_SIZE = 'abc.settings.chunk_size';
-
-    /**
-     * The name of a service that if present must resolve to a string that references
-     * a writable path in the filesystem.
-     *
-     * The default cache path is null (i.e. the framework doesn't use this feature).
-     *
-     * When present the framework will write an efficient, pre-compiled routing map
-     * on that location. The framework will attempt to create both the file AND the
-     * directory structure if any of them are missing.
-     *
-     * If the string is not a valid path, does not end in '.php' or does not point
-     * to a writable location for the PHP process the framework will emit error
-     * messages into STDERR on each request.
-     *
-     * @example /tmp/my-api/cached-routes.php
-     */
-    case ROUTER_CACHE_PATH = 'abc.settings.router_cache_path';
 }
