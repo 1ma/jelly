@@ -7,7 +7,7 @@ namespace Jelly\Handlers;
 use Psr\Http\Message;
 use Psr\Http\Server;
 
-final class GenericResponse implements Server\RequestHandlerInterface
+final class StaticResponse implements Server\RequestHandlerInterface
 {
     private readonly Message\ResponseInterface $response;
 

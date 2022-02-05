@@ -42,6 +42,7 @@ final class UncaughtExceptionSafeguardTest extends TestCase
 
         self::assertSame(500, $response->getStatusCode());
         self::assertFalse($response->hasHeader('Content-Type'));
+        self::assertSame('', (string) $response->getBody());
     }
 
     public function testExceptionInDevelopmentMode(): void

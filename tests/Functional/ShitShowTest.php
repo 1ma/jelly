@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jelly\Tests\Functional;
 
 use Jelly\Constants;
-use Jelly\Handlers\GenericResponse;
+use Jelly\Handlers\StaticResponse;
 use Jelly\Kernel;
 use Jelly\Tests\Fixtures\HelloHandler;
 use LogicException;
@@ -38,13 +38,13 @@ final class ShitShowTest extends TestCase
         return [
             'Mandatory service NOT_FOUND_HANDLER missing in container' => [
                 new Container([
-                    Constants\Services::BAD_METHOD_HANDLER->value => new GenericResponse(new Response(405))
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
                 ])
             ],
 
             'Mandatory service BAD_METHOD_HANDLER missing in container' => [
                 new Container([
-                    Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404))
+                    Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404))
                 ])
             ],
         ];
@@ -68,8 +68,8 @@ final class ShitShowTest extends TestCase
         return [
             'The service name attached to a route definition is not present in the container' => [
                 new Container([
-                    Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404)),
-                    Constants\Services::BAD_METHOD_HANDLER->value => new GenericResponse(new Response(405))
+                    Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
                 ])
             ]
         ];
@@ -99,8 +99,8 @@ final class ShitShowTest extends TestCase
                 new ServerRequest('GET', '/hello/jelly'),
                 new Container([
                     HelloHandler::class => 'oh noes',
-                    Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404)),
-                    Constants\Services::BAD_METHOD_HANDLER->value => new GenericResponse(new Response(405))
+                    Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
                 ])
             ],
 
@@ -109,7 +109,7 @@ final class ShitShowTest extends TestCase
                 new Container([
                     HelloHandler::class => new HelloHandler(),
                     Constants\Services::NOT_FOUND_HANDLER->value => 'aliki liki',
-                    Constants\Services::BAD_METHOD_HANDLER->value => new GenericResponse(new Response(405))
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
                 ])
             ],
 
@@ -117,7 +117,7 @@ final class ShitShowTest extends TestCase
                 new ServerRequest('POST', '/hello/jelly'),
                 new Container([
                     HelloHandler::class => new HelloHandler(),
-                    Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404)),
+                    Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
                     Constants\Services::BAD_METHOD_HANDLER->value => 'quack quack quack'
                 ])
             ],

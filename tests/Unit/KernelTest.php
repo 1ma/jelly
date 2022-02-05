@@ -27,8 +27,8 @@ final class KernelTest extends TestCase
     protected function setUp(): void
     {
         $this->container = new Container([
-            Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\GenericResponse(new Response(404)),
-            Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\GenericResponse(new Response(405, ['Allow' => 'GET, POST, PUT, UPDATE, DELETE, OPTIONS'])),
+            Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\StaticResponse(new Response(404)),
+            Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\StaticResponse(new Response(405, ['Allow' => 'GET, POST, PUT, UPDATE, DELETE, OPTIONS'])),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
             'index' => new HelloHandler,
