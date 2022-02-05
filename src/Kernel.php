@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ABC;
 
+use ABC\Constants;
 use ABC\Internal;
 use LogicException;
-use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
@@ -153,9 +153,13 @@ final class Kernel implements Server\RequestHandlerInterface
      * handles it and calls the Output service to send
      * the response back.
      */
-    public function run(ServerRequestCreatorInterface $factory): void
+    public function run(): void
     {
-        $response = $this->handle($factory->fromGlobals());
+        $request = $this->container->has(Constants\Settings::SERVER_REQUEST_CREATOR->value) ?
+            $this->container->get(Constants\Settings::SERVER_REQUEST_CREATOR->value)->fromGlobals() :
+            Internal\ServerRequestPicker::fromGlobals();
+
+        $response = $this->handle($request);
 
         header(sprintf(
             'HTTP/%s %s %s',

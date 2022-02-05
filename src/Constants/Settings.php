@@ -25,4 +25,16 @@ enum Settings: string
      * @see https://www.php.net/manual/en/ini.core.php#ini.memory-limit
      */
     case ECHO_CHUNK_SIZE = 'abc.settings.chunk_size';
+
+    /**
+     * The name of a service that if present must resolve to an instance of
+     * Nyholm\Psr7Server\ServerRequestCreator.
+     *
+     * Define this service if your project depends on multiple PSR-7 implementations
+     * and the framework's automatic pick is not the one you want.
+     *
+     * @see ServerRequestPicker for examples on how to instantiate this class for
+     *                          every major PSR-7 implementation.
+     */
+    case SERVER_REQUEST_CREATOR = 'abc.settings.server_request_creator';
 }
