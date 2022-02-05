@@ -31,22 +31,25 @@ final class Kernel implements Server\RequestHandlerInterface
      */
     private const DEFAULT_CHUNK_SIZE = 8 * (1024 ** 2);
 
+    private readonly ContainerInterface $container;
     private readonly Internal\MiddlewareChainResolver $chainResolver;
     private readonly Internal\RouteCollection $routes;
-    private readonly ContainerInterface $container;
 
+    /**
+     * @throws LogicException If the container is missing any of the mandatory services
+     */
     public function __construct(ContainerInterface $container)
     {
         Internal\Assert::hasService($container, Constants\Services::NOT_FOUND_HANDLER->value, 'Mandatory NOT_FOUND_HANDLER service missing');
         Internal\Assert::hasService($container, Constants\Services::BAD_METHOD_HANDLER->value, 'Mandatory BAD_METHOD_HANDLER service missing');
 
+        $this->container = $container;
         $this->chainResolver = new Internal\MiddlewareChainResolver();
         $this->routes = new Internal\RouteCollection;
-        $this->container = $container;
     }
 
     /**
-     * @throws LogicException If the container does not have $service
+     * @throws LogicException If the container does not have a service named $service
      */
     public function GET(string $pattern, string $service, string ...$groups): void
     {
@@ -54,7 +57,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have $service
+     * @throws LogicException If the container does not have a service named $service
      */
     public function POST(string $pattern, string $service, string ...$groups): void
     {
@@ -62,7 +65,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have $service
+     * @throws LogicException If the container does not have a service named $service
      */
     public function PUT(string $pattern, string $service, string ...$groups): void
     {
@@ -70,7 +73,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have $service
+     * @throws LogicException If the container does not have a service named $service
      */
     public function UPDATE(string $pattern, string $service, string ...$groups): void
     {
@@ -78,7 +81,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have $service
+     * @throws LogicException If the container does not have a service named $service
      */
     public function DELETE(string $pattern, string $service, string ...$groups): void
     {
@@ -86,7 +89,7 @@ final class Kernel implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have $service
+     * @throws LogicException If the container does not have a service named $service
      */
     public function map(string $method, string $pattern, string $service, string ...$groups): void
     {
@@ -96,6 +99,9 @@ final class Kernel implements Server\RequestHandlerInterface
         $this->chainResolver->pushHandler($service, ...$groups);
     }
 
+    /**
+     * @throws LogicException If the container does not have a service named $service
+     */
     public function wrap(string $service): void
     {
         Internal\Assert::hasService($this->container, $service);
@@ -103,6 +109,9 @@ final class Kernel implements Server\RequestHandlerInterface
         $this->chainResolver->pushGlobalMiddleware($service);
     }
 
+    /**
+     * @throws LogicException If the container does not have a service named $service
+     */
     public function tag(string $service, string ...$groups): void
     {
         Internal\Assert::hasService($this->container, $service);
@@ -112,6 +121,9 @@ final class Kernel implements Server\RequestHandlerInterface
 
     /**
      * Handles the request and returns a response.
+     *
+     * @throws LogicException If any of the services you wired up turn out
+     *                        not to be of the type they are supposed to be.
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
