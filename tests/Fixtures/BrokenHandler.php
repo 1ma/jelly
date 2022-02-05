@@ -14,8 +14,15 @@ use RuntimeException;
  */
 final class BrokenHandler implements RequestHandlerInterface
 {
+    public readonly RuntimeException $exception;
+
+    public function __construct()
+    {
+        $this->exception = new RuntimeException('Whoops!');
+    }
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        throw new RuntimeException('Whoops!');
+        throw $this->exception;
     }
 }
