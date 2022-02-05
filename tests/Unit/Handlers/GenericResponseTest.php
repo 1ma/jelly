@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Unit\Handlers;
+namespace Jelly\Tests\Unit\Handlers;
 
-use ABC\Handlers;
+use Jelly\Handlers;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Unit\Internal;
+namespace Jelly\Tests\Unit\Internal;
 
-use ABC\Constants;
-use ABC\Internal\RequestHandlerResolver;
-use ABC\Internal\RouteCollection;
+use Jelly\Constants;
+use Jelly\Internal\RequestHandlerResolver;
+use Jelly\Internal\RouteCollection;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -17,12 +17,12 @@ final class RequestHandlerResolverTest extends TestCase
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
-        $request = new ServerRequest('GET', '/hello/tron');
+        $request = new ServerRequest('GET', '/hello/jelly');
         $name = (new RequestHandlerResolver($routes))->resolve($request);
 
         self::assertSame('hello_handler', $name);
         self::assertSame('hello_handler', $request->getAttribute(Constants\Attributes::HANDLER->value));
-        self::assertSame(['name' => 'tron'], $request->getAttribute(Constants\Attributes::ARGS->value));
+        self::assertSame(['name' => 'jelly'], $request->getAttribute(Constants\Attributes::ARGS->value));
     }
 
     public function testNotFoundExecutionPath(): void
@@ -30,7 +30,7 @@ final class RequestHandlerResolverTest extends TestCase
         $routes = new RouteCollection;
         $routes->addRoute('GET', '/hello/{name}', 'bogus_handler');
 
-        $request = new ServerRequest('GET', '/bye/abc');
+        $request = new ServerRequest('GET', '/bye/jelly');
         $name = (new RequestHandlerResolver($routes))->resolve($request);
 
         self::assertSame(Constants\Services::NOT_FOUND_HANDLER->value, $name);
@@ -44,7 +44,7 @@ final class RequestHandlerResolverTest extends TestCase
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
         $routes->addRoute('POST', '/hello/{name}', 'bogus_handler');
 
-        $request = new ServerRequest('DELETE', '/hello/abc');
+        $request = new ServerRequest('DELETE', '/hello/jelly');
         $name = (new RequestHandlerResolver($routes))->resolve($request);
 
         self::assertSame(Constants\Services::BAD_METHOD_HANDLER->value, $name);

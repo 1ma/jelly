@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Unit;
+namespace Jelly\Tests\Unit;
 
-use ABC\Constants;
-use ABC\Handlers;
-use ABC\Kernel;
-use ABC\Middlewares\SecurityHeaders;
-use ABC\Middlewares\ServerCloak;
-use ABC\Tests\Fixtures\HelloHandler;
-use ABC\Tests\Fixtures\BrokenHandler;
+use Jelly\Constants;
+use Jelly\Handlers;
+use Jelly\Kernel;
+use Jelly\Middlewares\SecurityHeaders;
+use Jelly\Middlewares\ServerCloak;
+use Jelly\Tests\Fixtures\BrokenHandler;
+use Jelly\Tests\Fixtures\HelloHandler;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\ExpectationFailedException;

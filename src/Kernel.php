@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ABC;
+namespace Jelly;
 
-use ABC\Constants;
-use ABC\Internal;
+use Jelly\Constants;
+use Jelly\Internal;
 use LogicException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;

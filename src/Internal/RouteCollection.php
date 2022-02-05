@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Internal;
+namespace Jelly\Internal;
 
 use FastRoute;
 

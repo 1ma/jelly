@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ABC\Internal;
+namespace Jelly\Internal;
 
-use ABC\Constants;
+use Jelly\Constants;
 use function array_filter;
 use function array_merge;
-use function array_reverse;
 use function array_unique;
 
 /**

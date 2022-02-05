@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Constants;
+namespace Jelly\Constants;
 
 /**
  * Framework Settings
@@ -24,7 +24,7 @@ enum Settings: string
      *
      * @see https://www.php.net/manual/en/ini.core.php#ini.memory-limit
      */
-    case ECHO_CHUNK_SIZE = 'abc.settings.chunk_size';
+    case ECHO_CHUNK_SIZE = 'jelly.settings.chunk_size';
 
     /**
      * The name of a service that if present must resolve to an instance of
@@ -36,5 +36,5 @@ enum Settings: string
      * @see ServerRequestPicker for examples on how to instantiate this class for
      *                          every major PSR-7 implementation.
      */
-    case SERVER_REQUEST_CREATOR = 'abc.settings.server_request_creator';
+    case SERVER_REQUEST_CREATOR = 'jelly.settings.server_request_creator';
 }

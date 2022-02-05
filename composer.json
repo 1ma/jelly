@@ -1,6 +1,6 @@
 {
-    "name": "abc/kernel",
-    "description": "ABC framework kernel",
+    "name": "jelly/jelly",
+    "description": "The Jelly microframework",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -24,12 +24,12 @@
     },
     "autoload": {
         "psr-4": {
-            "ABC\\": "src/"
+            "Jelly\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ABC\\Tests\\": "tests/"
+            "Jelly\\Tests\\": "tests/"
         }
     },
     "scripts": {

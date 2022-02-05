@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Constants;
+namespace Jelly\Constants;
 
 /**
  * Attribute Keys
@@ -18,17 +18,17 @@ enum Attributes: string
      *
      * The attribute is always a string.
      */
-    case HANDLER = 'abc.attributes.handler';
+    case HANDLER = 'jelly.attributes.handler';
 
     /**
      * On successful dynamic route matches the framework will set a request attribute
      * with this name to the array of values that matched the route.
      *
-     * @example "GET /hello/tron" matches "GET /hello/{name}", so ARGS equals ['name' => 'tron']
+     * @example "GET /hello/jelly" matches "GET /hello/{name}", so ARGS equals ['name' => 'jelly']
      *
      * The attribute is a (possibly empty) hashmap of string => string entries.
      */
-    case ARGS = 'abc.attributes.args';
+    case ARGS = 'jelly.attributes.args';
 
     /**
      * On successful route matches the framework will set a request attribute
@@ -46,7 +46,7 @@ enum Attributes: string
      *
      * The attribute is a (possible empty) list of strings.
      */
-    case MIDDLEWARE_CHAIN = 'abc.attributes.middleware_chain';
+    case MIDDLEWARE_CHAIN = 'jelly.attributes.middleware_chain';
 
     /**
      * On Method Not Allowed errors (HTTP 405) the framework will set a request attribute
@@ -56,5 +56,5 @@ enum Attributes: string
      *
      * The attribute is a non-empty list of strings.
      */
-    case ALLOWED_METHODS = 'abc.attributes.allowed_methods';
+    case ALLOWED_METHODS = 'jelly.attributes.allowed_methods';
 }

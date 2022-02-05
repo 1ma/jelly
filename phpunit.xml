@@ -7,7 +7,7 @@
          verbose="true"
 >
     <testsuites>
-        <testsuite name="abc/kernel test suite">
+        <testsuite name="jelly/jelly test suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

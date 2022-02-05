@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Functional;
+namespace Jelly\Tests\Functional;
 
-use ABC\Constants;
-use ABC\Handlers\GenericResponse;
-use ABC\Kernel;
-use ABC\Tests\Fixtures\HelloHandler;
+use Jelly\Constants;
+use Jelly\Handlers\GenericResponse;
+use Jelly\Kernel;
+use Jelly\Tests\Fixtures\HelloHandler;
 use LogicException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -96,7 +96,7 @@ final class ShitShowTest extends TestCase
     {
         return [
             'Turns out the route that matched the request is not a RequestHandlerInterface' => [
-                new ServerRequest('GET', '/hello/tron'),
+                new ServerRequest('GET', '/hello/jelly'),
                 new Container([
                     HelloHandler::class => 'oh noes',
                     Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404)),
@@ -114,7 +114,7 @@ final class ShitShowTest extends TestCase
             ],
 
             'Turns out the BAD_METHOD_HANDLER is not actually a RequestHandlerInterface' => [
-                new ServerRequest('POST', '/hello/tron'),
+                new ServerRequest('POST', '/hello/jelly'),
                 new Container([
                     HelloHandler::class => new HelloHandler(),
                     Constants\Services::NOT_FOUND_HANDLER->value => new GenericResponse(new Response(404)),

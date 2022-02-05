@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Unit\Middlewares;
+namespace Jelly\Tests\Unit\Middlewares;
 
-use ABC\Middlewares\UncaughtExceptionSafeguard;
-use ABC\Tests\Fixtures\BrokenHandler;
-use ABC\Tests\Fixtures\HelloHandler;
+use Jelly\Middlewares\UncaughtExceptionSafeguard;
+use Jelly\Tests\Fixtures\BrokenHandler;
+use Jelly\Tests\Fixtures\HelloHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;

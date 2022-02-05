@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Unit\Internal;
+namespace Jelly\Tests\Unit\Internal;
 
-use ABC\Internal\MiddlewareChainResolver;
+use Jelly\Internal\MiddlewareChainResolver;
 use PHPUnit\Framework\TestCase;
 
 final class MiddlewareChainResolverTest extends TestCase

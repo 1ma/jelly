@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ABC\Constants;
+namespace Jelly\Constants;
 
 /**
  * Mandatory Services
@@ -21,7 +21,7 @@ enum Services: string
      *
      * At the very least the emitted response should have the HTTP 404 status code.
      */
-    case NOT_FOUND_HANDLER = 'abc.services.not_found_handler';
+    case NOT_FOUND_HANDLER = 'jelly.services.not_found_handler';
 
     /**
      * The name of a service that must resolve to a PSR-15 RequestHandlerInterface.
@@ -37,5 +37,5 @@ enum Services: string
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Allow
      */
-    case BAD_METHOD_HANDLER = 'abc.services.bad_method_handler';
+    case BAD_METHOD_HANDLER = 'jelly.services.bad_method_handler';
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ABC\Tests\Fixtures;
+namespace Jelly\Tests\Fixtures;
 
-use ABC\Constants;
+use Jelly\Constants;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

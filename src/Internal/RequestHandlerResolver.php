@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ABC\Internal;
+namespace Jelly\Internal;
 
-use ABC\Constants;
+use Jelly\Constants;
 use FastRoute;
 use Psr\Http\Message;
 
