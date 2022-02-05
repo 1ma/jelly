@@ -22,6 +22,8 @@ use UMA\DIC\Container;
 final class ShitShowTest extends TestCase
 {
     /**
+     * Tests framework exceptions when constructing the Kernel object
+     *
      * @dataProvider kernelBlowUpsProvider
      */
     public function testKernelBlowUps(ContainerInterface $container): void
@@ -49,6 +51,8 @@ final class ShitShowTest extends TestCase
     }
 
     /**
+     * Tests framework exceptions when adding route definitions
+     *
      * @dataProvider routeDefinitionExceptionsProvider
      */
     public function testRouteDefinitionExceptions(ContainerInterface $container): void
@@ -71,7 +75,12 @@ final class ShitShowTest extends TestCase
         ];
     }
 
+    // TODO Test framework exceptions when adding global middlewares
+    // TODO Test framework exceptions when adding group middlewares
+
     /**
+     * Tests framework exceptions while handling an actual request
+     *
      * @dataProvider runtimeErrorScenariosProvider
      */
     public function testRuntimeErrorScenarios(ServerRequest $request, ContainerInterface $container): void
@@ -86,7 +95,7 @@ final class ShitShowTest extends TestCase
     private function runtimeErrorScenariosProvider(): array
     {
         return [
-            'The route that matches is not a RequestHandlerInterface' => [
+            'Turns out the route that matched the request is not a RequestHandlerInterface' => [
                 new ServerRequest('GET', '/hello/tron'),
                 new Container([
                     HelloHandler::class => 'oh noes',
@@ -95,7 +104,7 @@ final class ShitShowTest extends TestCase
                 ])
             ],
 
-            'Mandatory service NOT_FOUND_HANDLER is not a RequestHandlerInterface' => [
+            'Turns out the NOT_FOUND_HANDLER is not actually a RequestHandlerInterface' => [
                 new ServerRequest('GET', '/wrong/url'),
                 new Container([
                     HelloHandler::class => new HelloHandler(),
@@ -104,7 +113,7 @@ final class ShitShowTest extends TestCase
                 ])
             ],
 
-            'Mandatory service BAD_METHOD_HANDLER is not a RequestHandlerInterface' => [
+            'Turns out the BAD_METHOD_HANDLER is not actually a RequestHandlerInterface' => [
                 new ServerRequest('POST', '/hello/tron'),
                 new Container([
                     HelloHandler::class => new HelloHandler(),
@@ -114,6 +123,4 @@ final class ShitShowTest extends TestCase
             ],
         ];
     }
-
-    // TODO middleware-related fuckups
 }

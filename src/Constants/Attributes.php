@@ -21,6 +21,24 @@ enum Attributes: string
     case HANDLER = 'abc.attributes.handler';
 
     /**
+     * On successful route matches the framework will set a request attribute
+     * with this name to the list of middleware service names that are
+     * to process this request. You can use this information to check that the
+     * middlewares that ended up wrapping a given request handler are exactly
+     * the ones you intended.
+     *
+     * @example 'dashboard', 'content-length' and 'basic-auth' are names of service definitions in the container:
+     *  + You registered a route named 'dashboard' with an extra group named 'secured'
+     *  + You wrapped the whole app in a 'content-length' global middleware
+     *  + You tagged the 'secured' group with a 'basic-auth' middleware
+     *  + If a request matches 'dashboard', its MIDDLEWARE_CHAIN attribute equals ['content-length', 'basic-auth']
+     *    and the full execution order is 'content-length' -> 'basic-auth' -> 'dashboard' -> 'basic-auth' -> 'content-length'
+     *
+     * The attribute is a (possible empty) list of strings.
+     */
+    case MIDDLEWARE_CHAIN = 'abc.attributes.middleware_chain';
+
+    /**
      * On successful dynamic route matches the framework will set a request attribute
      * with this name to the array of values that matched the route.
      *

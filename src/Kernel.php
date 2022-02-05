@@ -13,6 +13,7 @@ use Psr\Http\Message;
 use Psr\Http\Server;
 use TypeError;
 use function array_map;
+use function array_reverse;
 use function fastcgi_finish_request;
 use function function_exists;
 use function header;
@@ -47,51 +48,52 @@ final class Kernel implements Server\RequestHandlerInterface
     /**
      * @throws LogicException If the container does not have $service
      */
-    public function GET(string $pattern, string $service): void
+    public function GET(string $pattern, string $service, string ...$groups): void
     {
-        $this->map('GET', $pattern, $service);
+        $this->map('GET', $pattern, $service, ...$groups);
     }
 
     /**
      * @throws LogicException If the container does not have $service
      */
-    public function POST(string $pattern, string $service): void
+    public function POST(string $pattern, string $service, string ...$groups): void
     {
-        $this->map('POST', $pattern, $service);
+        $this->map('POST', $pattern, $service, ...$groups);
     }
 
     /**
      * @throws LogicException If the container does not have $service
      */
-    public function PUT(string $pattern, string $service): void
+    public function PUT(string $pattern, string $service, string ...$groups): void
     {
-        $this->map('PUT', $pattern, $service);
+        $this->map('PUT', $pattern, $service, ...$groups);
     }
 
     /**
      * @throws LogicException If the container does not have $service
      */
-    public function UPDATE(string $pattern, string $service): void
+    public function UPDATE(string $pattern, string $service, string ...$groups): void
     {
-        $this->map('UPDATE', $pattern, $service);
+        $this->map('UPDATE', $pattern, $service, ...$groups);
     }
 
     /**
      * @throws LogicException If the container does not have $service
      */
-    public function DELETE(string $pattern, string $service): void
+    public function DELETE(string $pattern, string $service, string ...$groups): void
     {
-        $this->map('DELETE', $pattern, $service);
+        $this->map('DELETE', $pattern, $service, ...$groups);
     }
 
     /**
      * @throws LogicException If the container does not have $service
      */
-    public function map(string $method, string $pattern, string $service): void
+    public function map(string $method, string $pattern, string $service, string ...$groups): void
     {
         Internal\Assert::hasService($this->container, $service);
 
         $this->routes->addRoute($method, $pattern, $service);
+        $this->chainResolver->pushHandler($service, ...$groups);
     }
 
     public function wrap(string $service): void
@@ -99,6 +101,13 @@ final class Kernel implements Server\RequestHandlerInterface
         Internal\Assert::hasService($this->container, $service);
 
         $this->chainResolver->pushGlobalMiddleware($service);
+    }
+
+    public function tag(string $service, string ...$groups): void
+    {
+        Internal\Assert::hasService($this->container, $service);
+
+        $this->chainResolver->pushLocalMiddleware($service, ...$groups);
     }
 
     /**
@@ -118,7 +127,13 @@ final class Kernel implements Server\RequestHandlerInterface
             throw new LogicException(message: $e->getMessage(), previous: $e);
         }
 
-        return Internal\ExecutionStack::compose($handler, ...$middlewareChain)->handle($request);
+        return Internal\ExecutionStack::compose($handler, ...$middlewareChain)
+            ->handle(
+                $request->withAttribute(
+                    Constants\Attributes::MIDDLEWARE_CHAIN->value,
+                    array_reverse($middlewareChainNames)
+                )
+            );
     }
 
     /**
