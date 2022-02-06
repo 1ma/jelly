@@ -10,6 +10,7 @@ use Jelly\Jelly;
 use Jelly\Middlewares\SecurityHeaders;
 use Jelly\Middlewares\ServerCloak;
 use Jelly\Tests\Fixtures\BrokenHandler;
+use Jelly\Tests\Fixtures\TripwireMiddleware;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -22,14 +23,17 @@ final class JellyTest extends TestCase
 {
     private Container $container;
     private Jelly $jelly;
+    private TripwireMiddleware $tripwire;
 
     protected function setUp(): void
     {
+        $this->tripwire = new TripwireMiddleware();
         $this->container = new Container([
             Constants\Services::NOT_FOUND_HANDLER->value => new Handlers\StaticResponse(new Response(404)),
             Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\StaticResponse(new Response(405, ['Allow' => 'GET, POST, PUT, UPDATE, DELETE, OPTIONS'])),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
+            TripwireMiddleware::class => $this->tripwire,
             'index' => new Handlers\StaticResponse(new Response(200, headers: ['Content-Type' => 'text/plain'], body: 'Hello.')),
             'boom' => new BrokenHandler
         ]);
@@ -102,7 +106,31 @@ final class JellyTest extends TestCase
         );
     }
 
-    public function testResolvedHandlerAndArgsAreAvailableToMiddlewares(): void
+    public function testTagging(): void
+    {
+        $this->jelly->GET('/', 'index');
+        $this->jelly->tag(TripwireMiddleware::class, 'index');
+
+        self::assertExpectedResponse(
+            $this->jelly->handle(new ServerRequest('GET', '/404')),
+            404,
+            [],
+            ''
+        );
+
+        self::assertFalse($this->tripwire->tripped);
+
+        self::assertExpectedResponse(
+            $this->jelly->handle(new ServerRequest('GET', '/')),
+            200,
+            ['Content-Type' => ['text/plain']],
+            'Hello.'
+        );
+
+        self::assertTrue($this->tripwire->tripped);
+    }
+
+    public function testAttributesAreSet(): void
     {
         $this->container->set('adhoc_middleware', new class($this) implements Server\MiddlewareInterface {
             private readonly TestCase $phpunit;
@@ -116,6 +144,7 @@ final class JellyTest extends TestCase
             {
                 $this->phpunit::assertSame('index', $request->getAttribute(Constants\Attributes::HANDLER->value));
                 $this->phpunit::assertSame(['name' => 'joe'], $request->getAttribute(Constants\Attributes::ARGS->value));
+                $this->phpunit::assertSame(['adhoc_middleware'], $request->getAttribute(Constants\Attributes::MIDDLEWARE_CHAIN->value));
 
                 return $handler->handle($request);
             }
