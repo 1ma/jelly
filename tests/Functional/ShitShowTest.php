@@ -7,7 +7,6 @@ namespace Jelly\Tests\Functional;
 use Jelly\Constants;
 use Jelly\Handlers\StaticResponse;
 use Jelly\Jelly;
-use Jelly\Tests\Fixtures\HelloHandler;
 use LogicException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -60,7 +59,7 @@ final class ShitShowTest extends TestCase
         $this->expectException(LogicException::class);
 
         $jelly = new Jelly($container);
-        $jelly->GET('/hello/{name}', HelloHandler::class);
+        $jelly->GET('/hello/{name}', StaticResponse::class);
     }
 
     private function routeDefinitionExceptionsProvider(): array
@@ -88,7 +87,7 @@ final class ShitShowTest extends TestCase
         $this->expectException(LogicException::class);
 
         $jelly = new Jelly($container);
-        $jelly->GET('/hello/{name}', HelloHandler::class);
+        $jelly->GET('/hello/{name}', StaticResponse::class);
         $jelly->handle($request);
     }
 
@@ -98,7 +97,7 @@ final class ShitShowTest extends TestCase
             'Turns out the route that matched the request is not a RequestHandlerInterface' => [
                 new ServerRequest('GET', '/hello/jelly'),
                 new Container([
-                    HelloHandler::class => 'oh noes',
+                    StaticResponse::class => 'oh noes',
                     Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
                     Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
                 ])
@@ -107,7 +106,7 @@ final class ShitShowTest extends TestCase
             'Turns out the NOT_FOUND_HANDLER is not actually a RequestHandlerInterface' => [
                 new ServerRequest('GET', '/wrong/url'),
                 new Container([
-                    HelloHandler::class => new HelloHandler(),
+                    StaticResponse::class => new StaticResponse(new Response(200)),
                     Constants\Services::NOT_FOUND_HANDLER->value => 'aliki liki',
                     Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
                 ])
@@ -116,7 +115,7 @@ final class ShitShowTest extends TestCase
             'Turns out the BAD_METHOD_HANDLER is not actually a RequestHandlerInterface' => [
                 new ServerRequest('POST', '/hello/jelly'),
                 new Container([
-                    HelloHandler::class => new HelloHandler(),
+                    StaticResponse::class => new StaticResponse(new Response(200)),
                     Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
                     Constants\Services::BAD_METHOD_HANDLER->value => 'quack quack quack'
                 ])

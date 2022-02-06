@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Jelly\Tests\Unit\Middlewares;
 
+use Jelly\Handlers\StaticResponse;
 use Jelly\Middlewares\UncaughtExceptionSafeguard;
 use Jelly\Tests\Fixtures\BrokenHandler;
-use Jelly\Tests\Fixtures\HelloHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -29,9 +30,9 @@ final class UncaughtExceptionSafeguardTest extends TestCase
     {
         $sut = new UncaughtExceptionSafeguard(new Psr17Factory(), new Psr17Factory(), true);
 
-        $response = $sut->process(new ServerRequest('GET', '/hello'), new HelloHandler());
+        $response = $sut->process(new ServerRequest('GET', '/hello'), new StaticResponse(new Response(204)));
 
-        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(204, $response->getStatusCode());
     }
 
     public function testExceptionInProdMode(): void

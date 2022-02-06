@@ -10,7 +10,6 @@ use Jelly\Jelly;
 use Jelly\Middlewares\SecurityHeaders;
 use Jelly\Middlewares\ServerCloak;
 use Jelly\Tests\Fixtures\BrokenHandler;
-use Jelly\Tests\Fixtures\HelloHandler;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -31,7 +30,7 @@ final class JellyTest extends TestCase
             Constants\Services::BAD_METHOD_HANDLER->value => new Handlers\StaticResponse(new Response(405, ['Allow' => 'GET, POST, PUT, UPDATE, DELETE, OPTIONS'])),
             SecurityHeaders::class => new SecurityHeaders(),
             ServerCloak::class => new ServerCloak('api.example.com'),
-            'index' => new HelloHandler,
+            'index' => new Handlers\StaticResponse(new Response(200, headers: ['Content-Type' => 'text/plain'], body: 'Hello.')),
             'boom' => new BrokenHandler
         ]);
 
@@ -131,7 +130,7 @@ final class JellyTest extends TestCase
             [
                 'Content-Type' => ['text/plain']
             ],
-            'Hello joe.'
+            'Hello.'
         );
     }
 
