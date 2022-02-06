@@ -17,6 +17,7 @@
         "nyholm/psr7": "^1.4",
         "phpmetrics/phpmetrics": "^2.7",
         "phpunit/phpunit": "^9.5",
+        "scrutinizer/ocular": "^1.8",
         "uma/dic": "^3.0"
     },
     "autoload": {
