@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Jelly\Tests\Unit\Middlewares;
 
 use Jelly\Handlers\StaticResponse;
-use Jelly\Middlewares\UncaughtExceptionSafeguard;
+use Jelly\Middlewares\CrashFailSafe;
 use Jelly\Tests\Fixtures\BrokenHandler;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
-final class UncaughtExceptionSafeguardTest extends TestCase
+final class CrashFailSafeTest extends TestCase
 {
     private string $errorLog;
 
@@ -28,7 +28,7 @@ final class UncaughtExceptionSafeguardTest extends TestCase
 
     public function testSuccessfulRun(): void
     {
-        $sut = new UncaughtExceptionSafeguard(new Psr17Factory(), new Psr17Factory(), true);
+        $sut = new CrashFailSafe(new Psr17Factory(), new Psr17Factory(), true);
 
         $response = $sut->process(new ServerRequest('GET', '/hello'), new StaticResponse(new Response(204)));
 
@@ -37,7 +37,7 @@ final class UncaughtExceptionSafeguardTest extends TestCase
 
     public function testExceptionInProdMode(): void
     {
-        $sut = new UncaughtExceptionSafeguard(new Psr17Factory(), new Psr17Factory(), true);
+        $sut = new CrashFailSafe(new Psr17Factory(), new Psr17Factory(), true);
 
         $response = $sut->process(new ServerRequest('GET', '/hello'), new BrokenHandler());
 
@@ -48,7 +48,7 @@ final class UncaughtExceptionSafeguardTest extends TestCase
 
     public function testExceptionInDevelopmentMode(): void
     {
-        $sut = new UncaughtExceptionSafeguard(new Psr17Factory(), new Psr17Factory(), false);
+        $sut = new CrashFailSafe(new Psr17Factory(), new Psr17Factory(), false);
 
         $response = $sut->process(new ServerRequest('GET', '/hello'), $handler = new BrokenHandler());
 

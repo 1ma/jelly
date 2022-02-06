@@ -10,10 +10,10 @@ use Throwable;
 use function error_log;
 
 /**
- * A reusable middleware for tracking uncaught exceptions and optionally
- * send the stack traces in the HTTP response.
+ * A reusable middleware for stopping the propagation of uncontrolled
+ * exceptions and optionally send their stack traces in the HTTP response.
  */
-final class UncaughtExceptionSafeguard implements Server\MiddlewareInterface
+final class CrashFailSafe implements Server\MiddlewareInterface
 {
     private readonly Message\ResponseFactoryInterface $responseFactory;
     private readonly Message\StreamFactoryInterface $streamFactory;
