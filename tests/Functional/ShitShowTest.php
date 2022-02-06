@@ -6,7 +6,7 @@ namespace Jelly\Tests\Functional;
 
 use Jelly\Constants;
 use Jelly\Handlers\StaticResponse;
-use Jelly\Kernel;
+use Jelly\Jelly;
 use Jelly\Tests\Fixtures\HelloHandler;
 use LogicException;
 use Nyholm\Psr7\Response;
@@ -22,18 +22,18 @@ use UMA\DIC\Container;
 final class ShitShowTest extends TestCase
 {
     /**
-     * Tests framework exceptions when constructing the Kernel object
+     * Tests framework exceptions when constructing the Jelly object
      *
-     * @dataProvider kernelBlowUpsProvider
+     * @dataProvider constructorBlowUpsProvider
      */
-    public function testKernelBlowUps(ContainerInterface $container): void
+    public function testConstructorBlowUps(ContainerInterface $container): void
     {
         $this->expectException(LogicException::class);
 
-        new Kernel($container);
+        new Jelly($container);
     }
 
-    private function kernelBlowUpsProvider(): array
+    private function constructorBlowUpsProvider(): array
     {
         return [
             'Mandatory service NOT_FOUND_HANDLER missing in container' => [
@@ -59,8 +59,8 @@ final class ShitShowTest extends TestCase
     {
         $this->expectException(LogicException::class);
 
-        $kernel = new Kernel($container);
-        $kernel->GET('/hello/{name}', HelloHandler::class);
+        $jelly = new Jelly($container);
+        $jelly->GET('/hello/{name}', HelloHandler::class);
     }
 
     private function routeDefinitionExceptionsProvider(): array
@@ -87,9 +87,9 @@ final class ShitShowTest extends TestCase
     {
         $this->expectException(LogicException::class);
 
-        $kernel = new Kernel($container);
-        $kernel->GET('/hello/{name}', HelloHandler::class);
-        $kernel->handle($request);
+        $jelly = new Jelly($container);
+        $jelly->GET('/hello/{name}', HelloHandler::class);
+        $jelly->handle($request);
     }
 
     private function runtimeErrorScenariosProvider(): array

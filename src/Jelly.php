@@ -20,7 +20,7 @@ use function header;
 use function implode;
 use function sprintf;
 
-final class Kernel implements Server\RequestHandlerInterface
+final class Jelly implements Server\RequestHandlerInterface
 {
     /**
      * The default behaviour is emitting the response in chunks of at most 8 MiB at a time.

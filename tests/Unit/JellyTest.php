@@ -6,7 +6,7 @@ namespace Jelly\Tests\Unit;
 
 use Jelly\Constants;
 use Jelly\Handlers;
-use Jelly\Kernel;
+use Jelly\Jelly;
 use Jelly\Middlewares\SecurityHeaders;
 use Jelly\Middlewares\ServerCloak;
 use Jelly\Tests\Fixtures\BrokenHandler;
@@ -19,10 +19,10 @@ use Psr\Http\Message;
 use Psr\Http\Server;
 use UMA\DIC\Container;
 
-final class KernelTest extends TestCase
+final class JellyTest extends TestCase
 {
     private Container $container;
-    private Kernel $kernel;
+    private Jelly $jelly;
 
     protected function setUp(): void
     {
@@ -35,15 +35,15 @@ final class KernelTest extends TestCase
             'boom' => new BrokenHandler
         ]);
 
-        $this->kernel = new Kernel($this->container);
+        $this->jelly = new Jelly($this->container);
     }
 
     public function testHappyPath(): void
     {
-        $this->kernel->GET('/', 'index');
+        $this->jelly->GET('/', 'index');
 
         self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
+            $this->jelly->handle(new ServerRequest('GET', '/')),
             200,
             ['Content-Type' => ['text/plain']],
             'Hello.'
@@ -53,7 +53,7 @@ final class KernelTest extends TestCase
     public function testNotFound(): void
     {
         self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
+            $this->jelly->handle(new ServerRequest('GET', '/')),
             404,
             [],
             ''
@@ -62,15 +62,15 @@ final class KernelTest extends TestCase
 
     public function testBadMethod(): void
     {
-        $this->kernel->GET('/', 'index');
-        $this->kernel->POST('/', 'index');
-        $this->kernel->PUT('/', 'index');
-        $this->kernel->UPDATE('/', 'index');
-        $this->kernel->DELETE('/', 'index');
-        $this->kernel->map('OPTIONS', '/', 'index');
+        $this->jelly->GET('/', 'index');
+        $this->jelly->POST('/', 'index');
+        $this->jelly->PUT('/', 'index');
+        $this->jelly->UPDATE('/', 'index');
+        $this->jelly->DELETE('/', 'index');
+        $this->jelly->map('OPTIONS', '/', 'index');
 
         self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('PATCH', '/')),
+            $this->jelly->handle(new ServerRequest('PATCH', '/')),
             405,
             ['Allow' => ['GET, POST, PUT, UPDATE, DELETE, OPTIONS']],
             ''
@@ -80,14 +80,14 @@ final class KernelTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testKernelWrapping(): void
+    public function testWrapping(): void
     {
-        $this->kernel->GET('/', 'index');
-        $this->kernel->wrap(ServerCloak::class);
-        $this->kernel->wrap(SecurityHeaders::class);
+        $this->jelly->GET('/', 'index');
+        $this->jelly->wrap(ServerCloak::class);
+        $this->jelly->wrap(SecurityHeaders::class);
 
         self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/')),
+            $this->jelly->handle(new ServerRequest('GET', '/')),
             200,
             [
                 'Content-Type' => ['text/plain'],
@@ -122,11 +122,11 @@ final class KernelTest extends TestCase
             }
         });
 
-        $this->kernel->GET('/hello/{name}', 'index');
-        $this->kernel->wrap('adhoc_middleware');
+        $this->jelly->GET('/hello/{name}', 'index');
+        $this->jelly->wrap('adhoc_middleware');
 
         self::assertExpectedResponse(
-            $this->kernel->handle(new ServerRequest('GET', '/hello/joe')),
+            $this->jelly->handle(new ServerRequest('GET', '/hello/joe')),
             200,
             [
                 'Content-Type' => ['text/plain']

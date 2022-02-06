@@ -8,7 +8,7 @@ use FastRoute;
 
 /**
  * A stupid wrapper over FastRoute's RouteCollector to simplify its
- * usage in the Kernel class. Inexplicably the RouteCollector does not
+ * usage in the Jelly class. Inexplicably the RouteCollector does not
  * implement DataGenerator even though it has all the methods of said
  * interface.
  *
