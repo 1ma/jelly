@@ -16,6 +16,9 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <file>src/Internal/ServerRequestPicker.php</file>
+        </exclude>
         <report>
             <clover outputFile="build/phpunit/clover.xml"/>
             <html outputDirectory="build/phpunit"/>
