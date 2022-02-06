@@ -14,12 +14,9 @@
         "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
-        "guzzlehttp/psr7": "^2.1",
-        "laminas/laminas-diactoros": "^2.8",
         "nyholm/psr7": "^1.4",
         "phpmetrics/phpmetrics": "^2.7",
         "phpunit/phpunit": "^9.5",
-        "slim/psr7": "^1.5",
         "uma/dic": "^3.0"
     },
     "autoload": {
