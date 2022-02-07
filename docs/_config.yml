@@ -1,5 +1,6 @@
 remote_theme: pmarsceill/just-the-docs
 
 color_scheme: dark
-
+heading_anchors: true
 search_enabled: false
+title: Jelly Docs
