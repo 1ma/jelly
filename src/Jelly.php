@@ -161,13 +161,6 @@ final class Jelly implements Server\RequestHandlerInterface
 
         $response = $this->handle($request);
 
-        header(sprintf(
-            'HTTP/%s %s %s',
-            $response->getProtocolVersion(),
-            $response->getStatusCode(),
-            $response->getReasonPhrase()
-        ));
-
         foreach ($response->getHeaders() as $name => $values) {
             header(sprintf(
                 '%s: %s',
@@ -175,6 +168,13 @@ final class Jelly implements Server\RequestHandlerInterface
                 implode(', ', $values)
             ));
         }
+
+        header(sprintf(
+            'HTTP/%s %s %s',
+            $response->getProtocolVersion(),
+            $response->getStatusCode(),
+            $response->getReasonPhrase()
+        ));
 
         // Only attempt to echo the response when neither the
         // X-SendFile nor X-Accel-Redirect headers are present in the response
