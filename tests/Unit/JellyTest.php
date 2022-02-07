@@ -10,6 +10,7 @@ use Jelly\Jelly;
 use Jelly\Middlewares\SecurityHeaders;
 use Jelly\Middlewares\ServerCloak;
 use Jelly\Tests\Fixtures\BrokenHandler;
+use Jelly\Tests\Fixtures\FakeRequestCreator;
 use Jelly\Tests\Fixtures\TripwireMiddleware;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -18,6 +19,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use UMA\DIC\Container;
+use function ob_get_clean;
+use function ob_start;
 
 final class JellyTest extends TestCase
 {
@@ -161,6 +164,23 @@ final class JellyTest extends TestCase
             ],
             'Hello.'
         );
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testRunMethod(): void
+    {
+        $this->jelly->GET('/', 'index');
+        $this->jelly->wrap(SecurityHeaders::class);
+
+        $this->container->set(Constants\Settings::SERVER_REQUEST_CREATOR->value, new FakeRequestCreator(new ServerRequest('GET', '/')));
+
+        ob_start();
+
+        $this->jelly->run();
+
+        self::assertSame('Hello.', ob_get_clean());
     }
 
     /**

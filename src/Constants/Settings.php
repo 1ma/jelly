@@ -28,7 +28,7 @@ enum Settings: string
 
     /**
      * The name of a service that if present must resolve to an instance of
-     * Nyholm\Psr7Server\ServerRequestCreator.
+     * Nyholm\Psr7Server\ServerRequestCreatorInterface.
      *
      * Define this service if your project depends on multiple PSR-7 implementations
      * and the framework's automatic pick is not the one you want.
