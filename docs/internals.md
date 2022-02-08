@@ -5,6 +5,8 @@ nav_order: 8
 
 # Tunable Settings
 
+# Project Documentation
+
 # Design Decisions
 
 ## Why PHP >= 8.1? Will Jelly support older versions of PHP?
