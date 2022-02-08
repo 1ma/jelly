@@ -1,6 +1,12 @@
 remote_theme: pmarsceill/just-the-docs
+repository: 1ma/jelly
+
+title: Jelly Docs
 
 color_scheme: dark
 heading_anchors: true
 search_enabled: false
-title: Jelly Docs
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
