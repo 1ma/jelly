@@ -15,17 +15,17 @@ use function error_log;
  */
 final class CrashFailSafe implements Server\MiddlewareInterface
 {
-    private readonly Message\ResponseFactoryInterface $responseFactory;
+    private readonly Message\ResponseInterface $baseResponse;
     private readonly Message\StreamFactoryInterface $streamFactory;
     private readonly bool $hide;
 
     public function __construct(
-        Message\ResponseFactoryInterface $responseFactory,
-        Message\StreamFactoryInterface   $streamFactory,
-        bool                             $hide = true
+        Message\ResponseInterface      $baseResponse,
+        Message\StreamFactoryInterface $streamFactory,
+        bool                           $hide = true
     )
     {
-        $this->responseFactory = $responseFactory;
+        $this->baseResponse = $baseResponse;
         $this->streamFactory = $streamFactory;
         $this->hide = $hide;
     }
@@ -37,12 +37,9 @@ final class CrashFailSafe implements Server\MiddlewareInterface
         } catch (Throwable $t) {
             error_log((string)$t);
 
-            $response = $this->responseFactory
-                ->createResponse(500);
-
             return $this->hide ?
-                $response :
-                $response
+                $this->baseResponse :
+                $this->baseResponse
                     ->withHeader('Content-Type', 'text/plain')
                     ->withBody($this->streamFactory->createStream((string)$t));
         }

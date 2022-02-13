@@ -28,7 +28,7 @@ final class CrashFailSafeTest extends TestCase
 
     public function testSuccessfulRun(): void
     {
-        $sut = new CrashFailSafe(new Psr17Factory(), new Psr17Factory(), true);
+        $sut = new CrashFailSafe(new Response(500), new Psr17Factory(), true);
 
         $response = $sut->process(new ServerRequest('GET', '/hello'), new StaticResponse(new Response(204)));
 
@@ -37,7 +37,7 @@ final class CrashFailSafeTest extends TestCase
 
     public function testExceptionInProdMode(): void
     {
-        $sut = new CrashFailSafe(new Psr17Factory(), new Psr17Factory(), true);
+        $sut = new CrashFailSafe(new Response(500), new Psr17Factory(), true);
 
         $response = $sut->process(new ServerRequest('GET', '/hello'), new BrokenHandler());
 
@@ -48,7 +48,7 @@ final class CrashFailSafeTest extends TestCase
 
     public function testExceptionInDevelopmentMode(): void
     {
-        $sut = new CrashFailSafe(new Psr17Factory(), new Psr17Factory(), false);
+        $sut = new CrashFailSafe(new Response(500), new Psr17Factory(), false);
 
         $response = $sut->process(new ServerRequest('GET', '/hello'), $handler = new BrokenHandler());
 
