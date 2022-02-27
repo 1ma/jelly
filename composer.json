@@ -14,10 +14,10 @@
         "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
-        "nyholm/psr7": "^1.4",
+        "nyholm/psr7": "^1.5",
         "phpmetrics/phpmetrics": "^2.7",
         "phpunit/phpunit": "^9.5",
-        "scrutinizer/ocular": "^1.8",
+        "scrutinizer/ocular": "^1.9",
         "uma/dic": "^3.0"
     },
     "autoload": {
