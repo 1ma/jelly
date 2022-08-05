@@ -14,4 +14,6 @@ jobs:
         run: composer test
       - name: Send coverage to Scrutinizer CI
         if: ${{ always() }}
-        run: php vendor/bin/ocular code-coverage:upload --format=php-clover build/phpunit/clover.xml
+        run: |
+          git config --global --add safe.directory /__w/jelly/jelly
+          php vendor/bin/ocular code-coverage:upload --format=php-clover build/phpunit/clover.xml
