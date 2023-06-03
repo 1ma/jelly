@@ -32,7 +32,7 @@ final class ShitShowTest extends TestCase
         new Jelly($container);
     }
 
-    private function constructorBlowUpsProvider(): array
+    public static function constructorBlowUpsProvider(): array
     {
         return [
             'Mandatory service NOT_FOUND_HANDLER missing in container' => [
@@ -62,7 +62,7 @@ final class ShitShowTest extends TestCase
         $jelly->GET('/hello/{name}', StaticResponse::class);
     }
 
-    private function routeDefinitionExceptionsProvider(): array
+    public static function routeDefinitionExceptionsProvider(): array
     {
         return [
             'The service name attached to a route definition is not present in the container' => [
@@ -91,7 +91,7 @@ final class ShitShowTest extends TestCase
         $jelly->handle($request);
     }
 
-    private function runtimeErrorScenariosProvider(): array
+    public static function runtimeErrorScenariosProvider(): array
     {
         return [
             'Turns out the route that matched the request is not a RequestHandlerInterface' => [

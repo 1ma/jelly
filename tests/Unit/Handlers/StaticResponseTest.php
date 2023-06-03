@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class StaticResponseTest extends TestCase
 {
-    public function testIt(): void
+    public function testStaticResponse(): void
     {
         $handler = new Handlers\StaticResponse($response = new Response(418));
 
