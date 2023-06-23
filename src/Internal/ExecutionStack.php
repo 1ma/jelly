@@ -10,10 +10,10 @@ use Psr\Http\Server;
 /**
  * @internal
  */
-final class ExecutionStack implements Server\RequestHandlerInterface
+final readonly class ExecutionStack implements Server\RequestHandlerInterface
 {
-    private readonly Server\MiddlewareInterface $middleware;
-    private readonly Server\RequestHandlerInterface $next;
+    private Server\MiddlewareInterface $middleware;
+    private Server\RequestHandlerInterface $next;
 
     public static function compose(Server\RequestHandlerInterface $core, Server\MiddlewareInterface ...$layers): Server\RequestHandlerInterface
     {

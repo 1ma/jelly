@@ -20,7 +20,7 @@ use function header;
 use function implode;
 use function sprintf;
 
-final class Jelly implements Server\RequestHandlerInterface
+final readonly class Jelly implements Server\RequestHandlerInterface
 {
     /**
      * The default behaviour is emitting the response in chunks of at most 8 MiB at a time.
@@ -31,9 +31,9 @@ final class Jelly implements Server\RequestHandlerInterface
      */
     private const DEFAULT_CHUNK_SIZE = 8 * (1024 ** 2);
 
-    private readonly ContainerInterface $container;
-    private readonly Internal\MiddlewareChainResolver $chainResolver;
-    private readonly Internal\RouteCollection $routes;
+    private ContainerInterface $container;
+    private Internal\MiddlewareChainResolver $chainResolver;
+    private Internal\RouteCollection $routes;
 
     /**
      * @throws LogicException If the container is missing any of the mandatory services

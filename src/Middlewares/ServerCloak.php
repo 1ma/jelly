@@ -13,9 +13,9 @@ use function header_remove;
  * the response and overwrites Server with the value given
  * at construction time.
  */
-final class ServerCloak implements Server\MiddlewareInterface
+final readonly class ServerCloak implements Server\MiddlewareInterface
 {
-    private readonly string $serverName;
+    private string $serverName;
 
     public function __construct(string $serverName)
     {

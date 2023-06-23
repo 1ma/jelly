@@ -13,20 +13,20 @@ use function error_log;
  * A reusable middleware for stopping the propagation of uncontrolled
  * exceptions and optionally send their stack traces in the HTTP response.
  */
-final class CrashFailSafe implements Server\MiddlewareInterface
+final readonly class CrashFailsafe implements Server\MiddlewareInterface
 {
-    private readonly Message\ResponseInterface $baseResponse;
-    private readonly Message\StreamFactoryInterface $streamFactory;
-    private readonly bool $hide;
+    private Message\ResponseInterface $staticResponse;
+    private Message\ResponseFactoryInterface $responseFactory;
+    private bool $hide;
 
     public function __construct(
-        Message\ResponseInterface      $baseResponse,
-        Message\StreamFactoryInterface $streamFactory,
-        bool                           $hide = true
+        Message\ResponseInterface        $staticResponse,
+        Message\ResponseFactoryInterface $responseFactory,
+        bool                             $hide = true
     )
     {
-        $this->baseResponse = $baseResponse;
-        $this->streamFactory = $streamFactory;
+        $this->staticResponse = $staticResponse;
+        $this->responseFactory = $responseFactory;
         $this->hide = $hide;
     }
 
@@ -38,10 +38,10 @@ final class CrashFailSafe implements Server\MiddlewareInterface
             error_log((string)$t);
 
             return $this->hide ?
-                $this->baseResponse :
-                $this->baseResponse
+                $this->staticResponse :
+                $this->responseFactory->createResponse(500)
                     ->withHeader('Content-Type', 'text/plain')
-                    ->withBody($this->streamFactory->createStream((string)$t));
+                    ->withBody($this->responseFactory->createStream((string)$t));
         }
     }
 }

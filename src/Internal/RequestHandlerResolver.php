@@ -11,9 +11,9 @@ use Psr\Http\Message;
 /**
  * @internal
  */
-final class RequestHandlerResolver
+final readonly class RequestHandlerResolver
 {
-    private readonly FastRoute\Dispatcher $router;
+    private FastRoute\Dispatcher $router;
 
     public function __construct(FastRoute\DataGenerator $routeCollection)
     {

@@ -16,9 +16,9 @@ use function sprintf;
  * @see https://www.owasp.org/index.php/REST_Security_Cheat_Sheet
  * @see https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
  */
-final class SecurityHeaders implements Server\MiddlewareInterface
+final readonly class SecurityHeaders implements Server\MiddlewareInterface
 {
-    private readonly int $maxAge;
+    private int $maxAge;
 
     public function __construct(int $maxAge = 30)
     {

@@ -7,9 +7,9 @@ namespace Jelly\Handlers;
 use Psr\Http\Message;
 use Psr\Http\Server;
 
-final class StaticResponse implements Server\RequestHandlerInterface
+final readonly class StaticResponse implements Server\RequestHandlerInterface
 {
-    private readonly Message\ResponseInterface $response;
+    private Message\ResponseInterface $response;
 
     public function __construct(Message\ResponseInterface $response)
     {
