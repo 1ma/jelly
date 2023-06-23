@@ -35,13 +35,13 @@ final readonly class CrashFailsafe implements Server\MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (Throwable $t) {
-            error_log((string)$t);
+            error_log($stackTrace = (string)$t);
 
             return $this->hide ?
                 $this->staticResponse :
                 $this->responseFactory->createResponse(500)
                     ->withHeader('Content-Type', 'text/plain')
-                    ->withBody($this->responseFactory->createStream((string)$t));
+                    ->withBody($this->responseFactory->createStream($stackTrace));
         }
     }
 }
