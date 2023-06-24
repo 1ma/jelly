@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Jelly\Internal;
 
 use Jelly\Constants;
-use function array_filter;
-use function array_merge;
-use function array_unique;
 
 /**
  * @internal
@@ -22,7 +19,7 @@ final class MiddlewareChainResolver
     {
         $this->handlers = [
             Constants\Services::NOT_FOUND_HANDLER->value => [],
-            Constants\Services::BAD_METHOD_HANDLER->value => []
+            Constants\Services::BAD_METHOD_HANDLER->value => [],
         ];
 
         $this->localMiddlewares = [];

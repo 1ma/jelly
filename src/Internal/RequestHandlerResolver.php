@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jelly\Internal;
 
-use Jelly\Constants;
 use FastRoute;
+use Jelly\Constants;
 use Psr\Http\Message;
 
 /**
@@ -36,14 +36,12 @@ final readonly class RequestHandlerResolver
         $request = match ($service) {
             Constants\Services::NOT_FOUND_HANDLER->value => $request,
 
-            Constants\Services::BAD_METHOD_HANDLER->value =>
-                $request
-                    ->withAttribute(Constants\Attributes::ALLOWED_METHODS->value, $routeInfo[1]),
+            Constants\Services::BAD_METHOD_HANDLER->value => $request
+                ->withAttribute(Constants\Attributes::ALLOWED_METHODS->value, $routeInfo[1]),
 
-            default =>
-                $request
-                    ->withAttribute(Constants\Attributes::HANDLER->value, $routeInfo[1])
-                    ->withAttribute(Constants\Attributes::ARGS->value, $routeInfo[2])
+            default => $request
+                ->withAttribute(Constants\Attributes::HANDLER->value, $routeInfo[1])
+                ->withAttribute(Constants\Attributes::ARGS->value, $routeInfo[2])
         };
 
         return $service;

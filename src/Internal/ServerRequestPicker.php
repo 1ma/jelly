@@ -6,18 +6,16 @@ namespace Jelly\Internal;
 
 use GuzzleHttp\Psr7\HttpFactory;
 use Laminas\Diactoros;
-use LogicException;
-use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Factory as Slim;
-use function class_exists;
 
 final class ServerRequestPicker
 {
     /**
-     * @throws LogicException If none of the supported PSR-7 implementations
-     *                        is installed along the framework.
+     * @throws \LogicException if none of the supported PSR-7 implementations
+     *                         is installed along the framework
      */
     public static function fromGlobals(): ServerRequestInterface
     {
@@ -28,6 +26,7 @@ final class ServerRequestPicker
     {
         if (class_exists(Psr17Factory::class)) {
             $factory = new Psr17Factory();
+
             return new ServerRequestCreator($factory, $factory, $factory, $factory);
         }
 
@@ -54,9 +53,10 @@ final class ServerRequestPicker
 
         if (class_exists(HttpFactory::class)) {
             $factory = new HttpFactory();
+
             return new ServerRequestCreator($factory, $factory, $factory, $factory);
         }
 
-        throw new LogicException('Need at least one psr-7 implementation');
+        throw new \LogicException('Need at least one psr-7 implementation');
     }
 }

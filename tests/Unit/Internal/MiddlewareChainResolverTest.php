@@ -92,7 +92,7 @@ final class MiddlewareChainResolverTest extends TestCase
             'inner-local-middleware',
             'outer-local-middleware',
             'inner-global-middleware',
-            'outer-global-middleware'
+            'outer-global-middleware',
         ], $this->sut->resolve('index'));
     }
 
@@ -107,7 +107,7 @@ final class MiddlewareChainResolverTest extends TestCase
         self::assertSame([
             'basic-auth',
             'ip-logger',
-            'security-headers'
+            'security-headers',
         ], $this->sut->resolve('dashboard'));
     }
 }

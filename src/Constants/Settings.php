@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jelly\Constants;
 
 /**
- * Framework Settings
+ * Framework Settings.
  *
  * These are values or services that can be defined in the container but are
  * optional. If present they allow tuning some framework settings.

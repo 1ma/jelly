@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Jelly\Internal;
 
-use LogicException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TypeError;
 
 /**
  * @internal
@@ -15,17 +13,17 @@ use TypeError;
 final class Assert
 {
     /**
-     * @throws LogicException
+     * @throws \LogicException
      */
     public static function hasService(ContainerInterface $container, string $service, string $message = null): void
     {
         if (!$container->has($service)) {
-            throw new LogicException($message ?? "'$service' must be registered as a service and it is not");
+            throw new \LogicException($message ?? "'$service' must be registered as a service and it is not");
         }
     }
 
     /**
-     * @throws TypeError
+     * @throws \TypeError
      */
     public static function isRequestHandler(RequestHandlerInterface $handler): RequestHandlerInterface
     {

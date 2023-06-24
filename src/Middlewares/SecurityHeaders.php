@@ -6,10 +6,9 @@ namespace Jelly\Middlewares;
 
 use Psr\Http\Message;
 use Psr\Http\Server;
-use function sprintf;
 
 /**
- * Middleware that set the outgoing headers based on the following recommendations:
+ * Middleware that set the outgoing headers based on the following recommendations.
  *
  * @see https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software
  * @see https://security.stackexchange.com/a/147559/70983
@@ -25,9 +24,6 @@ final readonly class SecurityHeaders implements Server\MiddlewareInterface
         $this->maxAge = $maxAge;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
     {
         return $handler->handle($request)

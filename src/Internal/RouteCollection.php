@@ -19,8 +19,8 @@ final class RouteCollection extends FastRoute\RouteCollector implements FastRout
     public function __construct()
     {
         parent::__construct(
-            new FastRoute\RouteParser\Std,
-            new FastRoute\DataGenerator\GroupCountBased
+            new FastRoute\RouteParser\Std(),
+            new FastRoute\DataGenerator\GroupCountBased()
         );
     }
 }

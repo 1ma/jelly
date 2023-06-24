@@ -10,6 +10,8 @@ jobs:
         uses: actions/checkout@v1
       - name: Install dependencies
         run: composer install
+      - name: Run Linter
+        run: php vendor/bin/php-cs-fixer fix -v --dry-run
       - name: Execute test suite
         run: composer test
       - name: Send coverage to Scrutinizer CI

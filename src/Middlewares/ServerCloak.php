@@ -6,7 +6,6 @@ namespace Jelly\Middlewares;
 
 use Psr\Http\Message;
 use Psr\Http\Server;
-use function header_remove;
 
 /**
  * A middleware that removes the X-Powered-By header from
@@ -22,9 +21,6 @@ final readonly class ServerCloak implements Server\MiddlewareInterface
         $this->serverName = $serverName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(Message\ServerRequestInterface $request, Server\RequestHandlerInterface $handler): Message\ResponseInterface
     {
         header_remove('X-Powered-By');

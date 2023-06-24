@@ -6,8 +6,6 @@ namespace Jelly\Middlewares;
 
 use Psr\Http\Message;
 use Psr\Http\Server;
-use Throwable;
-use function error_log;
 
 /**
  * A reusable middleware for stopping the propagation of uncontrolled
@@ -20,11 +18,10 @@ final readonly class CrashFailsafe implements Server\MiddlewareInterface
     private bool $hide;
 
     public function __construct(
-        Message\ResponseInterface        $staticResponse,
+        Message\ResponseInterface $staticResponse,
         Message\ResponseFactoryInterface $responseFactory,
-        bool                             $hide = true
-    )
-    {
+        bool $hide = true
+    ) {
         $this->staticResponse = $staticResponse;
         $this->responseFactory = $responseFactory;
         $this->hide = $hide;
@@ -34,8 +31,8 @@ final readonly class CrashFailsafe implements Server\MiddlewareInterface
     {
         try {
             return $handler->handle($request);
-        } catch (Throwable $t) {
-            error_log($stackTrace = (string)$t);
+        } catch (\Throwable $t) {
+            error_log($stackTrace = (string) $t);
 
             return $this->hide ?
                 $this->staticResponse :

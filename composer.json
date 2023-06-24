@@ -14,6 +14,7 @@
         "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.19",
         "nyholm/psr7": "^1.8",
         "phpmetrics/phpmetrics": "^2.8",
         "phpunit/phpunit": "^10.2",
@@ -31,6 +32,7 @@
         }
     },
     "scripts": {
+        "cs-fix": "vendor/bin/php-cs-fixer fix -v",
         "test": "vendor/bin/phpunit",
         "metrics": [
             "@test",

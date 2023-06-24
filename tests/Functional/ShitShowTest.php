@@ -21,13 +21,13 @@ use UMA\DIC\Container;
 final class ShitShowTest extends TestCase
 {
     /**
-     * Tests framework exceptions when constructing the Jelly object
+     * Tests framework exceptions when constructing the Jelly object.
      *
      * @dataProvider constructorBlowUpsProvider
      */
     public function testConstructorBlowUps(ContainerInterface $container): void
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(\LogicException::class);
 
         new Jelly($container);
     }
@@ -37,26 +37,26 @@ final class ShitShowTest extends TestCase
         return [
             'Mandatory service NOT_FOUND_HANDLER missing in container' => [
                 new Container([
-                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
-                ])
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405)),
+                ]),
             ],
 
             'Mandatory service BAD_METHOD_HANDLER missing in container' => [
                 new Container([
-                    Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404))
-                ])
+                    Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
+                ]),
             ],
         ];
     }
 
     /**
-     * Tests framework exceptions when adding route definitions
+     * Tests framework exceptions when adding route definitions.
      *
      * @dataProvider routeDefinitionExceptionsProvider
      */
     public function testRouteDefinitionExceptions(ContainerInterface $container): void
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(\LogicException::class);
 
         $jelly = new Jelly($container);
         $jelly->GET('/hello/{name}', StaticResponse::class);
@@ -68,9 +68,9 @@ final class ShitShowTest extends TestCase
             'The service name attached to a route definition is not present in the container' => [
                 new Container([
                     Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
-                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
-                ])
-            ]
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405)),
+                ]),
+            ],
         ];
     }
 
@@ -78,13 +78,13 @@ final class ShitShowTest extends TestCase
     // TODO Test framework exceptions when adding group middlewares
 
     /**
-     * Tests framework exceptions while handling an actual request
+     * Tests framework exceptions while handling an actual request.
      *
      * @dataProvider runtimeErrorScenariosProvider
      */
     public function testRuntimeErrorScenarios(ServerRequest $request, ContainerInterface $container): void
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(\LogicException::class);
 
         $jelly = new Jelly($container);
         $jelly->GET('/hello/{name}', StaticResponse::class);
@@ -99,8 +99,8 @@ final class ShitShowTest extends TestCase
                 new Container([
                     StaticResponse::class => 'oh noes',
                     Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
-                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
-                ])
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405)),
+                ]),
             ],
 
             'Turns out the NOT_FOUND_HANDLER is not actually a RequestHandlerInterface' => [
@@ -108,8 +108,8 @@ final class ShitShowTest extends TestCase
                 new Container([
                     StaticResponse::class => new StaticResponse(new Response(200)),
                     Constants\Services::NOT_FOUND_HANDLER->value => 'aliki liki',
-                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405))
-                ])
+                    Constants\Services::BAD_METHOD_HANDLER->value => new StaticResponse(new Response(405)),
+                ]),
             ],
 
             'Turns out the BAD_METHOD_HANDLER is not actually a RequestHandlerInterface' => [
@@ -117,8 +117,8 @@ final class ShitShowTest extends TestCase
                 new Container([
                     StaticResponse::class => new StaticResponse(new Response(200)),
                     Constants\Services::NOT_FOUND_HANDLER->value => new StaticResponse(new Response(404)),
-                    Constants\Services::BAD_METHOD_HANDLER->value => 'quack quack quack'
-                ])
+                    Constants\Services::BAD_METHOD_HANDLER->value => 'quack quack quack',
+                ]),
             ],
         ];
     }

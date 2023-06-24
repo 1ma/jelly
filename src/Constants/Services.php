@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jelly\Constants;
 
 /**
- * Mandatory Services
+ * Mandatory Services.
  *
  * These are service names that must be present in the PSR-11 container when
  * you construct the framework object, otherwise the constructor will throw

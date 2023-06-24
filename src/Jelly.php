@@ -4,21 +4,10 @@ declare(strict_types=1);
 
 namespace Jelly;
 
-use Jelly\Constants;
-use Jelly\Internal;
-use LogicException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message;
 use Psr\Http\Server;
-use TypeError;
-use function array_map;
-use function array_reverse;
-use function fastcgi_finish_request;
-use function function_exists;
-use function header;
-use function implode;
-use function sprintf;
 
 final readonly class Jelly implements Server\RequestHandlerInterface
 {
@@ -36,7 +25,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     private Internal\RouteCollection $routes;
 
     /**
-     * @throws LogicException If the container is missing any of the mandatory services
+     * @throws \LogicException If the container is missing any of the mandatory services
      */
     public function __construct(ContainerInterface $container)
     {
@@ -45,11 +34,11 @@ final readonly class Jelly implements Server\RequestHandlerInterface
 
         $this->container = $container;
         $this->chainResolver = new Internal\MiddlewareChainResolver();
-        $this->routes = new Internal\RouteCollection;
+        $this->routes = new Internal\RouteCollection();
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function GET(string $pattern, string $service, string ...$groups): void
     {
@@ -57,7 +46,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function POST(string $pattern, string $service, string ...$groups): void
     {
@@ -65,7 +54,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function PUT(string $pattern, string $service, string ...$groups): void
     {
@@ -73,7 +62,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function UPDATE(string $pattern, string $service, string ...$groups): void
     {
@@ -81,7 +70,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function DELETE(string $pattern, string $service, string ...$groups): void
     {
@@ -89,7 +78,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function map(string $method, string $pattern, string $service, string ...$groups): void
     {
@@ -100,7 +89,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function wrap(string $service): void
     {
@@ -110,7 +99,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     }
 
     /**
-     * @throws LogicException If the container does not have a service named $service
+     * @throws \LogicException If the container does not have a service named $service
      */
     public function tag(string $service, string ...$groups): void
     {
@@ -122,8 +111,8 @@ final readonly class Jelly implements Server\RequestHandlerInterface
     /**
      * Handles the request and returns a response.
      *
-     * @throws LogicException If any of the services you wired up turn out
-     *                        not to be of the type they are supposed to be.
+     * @throws \LogicException if any of the services you wired up turn out
+     *                         not to be of the type they are supposed to be
      */
     public function handle(Message\ServerRequestInterface $request): Message\ResponseInterface
     {
@@ -132,11 +121,12 @@ final readonly class Jelly implements Server\RequestHandlerInterface
 
         try {
             $handler = Internal\Assert::isRequestHandler($this->container->get($handlerName));
-            $middlewareChain = array_map(function (string $name): Server\MiddlewareInterface {
-                return $this->container->get($name);
-            }, $middlewareChainNames);
-        } catch (ContainerExceptionInterface|TypeError $e) {
-            throw new LogicException(message: $e->getMessage(), previous: $e);
+            $middlewareChain = array_map(
+                fn (string $name): Server\MiddlewareInterface => $this->container->get($name),
+                $middlewareChainNames
+            );
+        } catch (ContainerExceptionInterface|\TypeError $e) {
+            throw new \LogicException(message: $e->getMessage(), previous: $e);
         }
 
         return Internal\ExecutionStack::compose($handler, ...$middlewareChain)
@@ -192,7 +182,7 @@ final readonly class Jelly implements Server\RequestHandlerInterface
             $stream->close();
         }
 
-        if (function_exists('fastcgi_finish_request')) {
+        if (\function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
         }
     }

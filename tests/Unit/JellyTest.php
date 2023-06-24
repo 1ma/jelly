@@ -19,8 +19,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message;
 use Psr\Http\Server;
 use UMA\DIC\Container;
-use function ob_get_clean;
-use function ob_start;
 
 final class JellyTest extends TestCase
 {
@@ -38,7 +36,7 @@ final class JellyTest extends TestCase
             ServerCloak::class => new ServerCloak('api.example.com'),
             TripwireMiddleware::class => $this->tripwire,
             'index' => new Handlers\StaticResponse(new Response(200, headers: ['Content-Type' => 'text/plain'], body: 'Hello.')),
-            'boom' => new BrokenHandler
+            'boom' => new BrokenHandler(),
         ]);
 
         $this->jelly = new Jelly($this->container);
@@ -103,7 +101,7 @@ final class JellyTest extends TestCase
                 'Strict-Transport-Security' => ['max-age=30'],
                 'X-Content-Type-Options' => ['nosniff'],
                 'X-Frame-Options' => ['DENY'],
-                'X-XSS-Protection' => ['1; mode=block']
+                'X-XSS-Protection' => ['1; mode=block'],
             ],
             'Hello.'
         );
@@ -160,7 +158,7 @@ final class JellyTest extends TestCase
             $this->jelly->handle(new ServerRequest('GET', '/hello/joe')),
             200,
             [
-                'Content-Type' => ['text/plain']
+                'Content-Type' => ['text/plain'],
             ],
             'Hello.'
         );
@@ -192,13 +190,12 @@ final class JellyTest extends TestCase
         array $expectedHeaders,
         string $expectedBody,
         bool $exactMatch = true
-    ): void
-    {
+    ): void {
         self::assertSame($expectedStatusCode, $response->getStatusCode());
         self::assertSame($expectedHeaders, $response->getHeaders());
 
         $exactMatch ?
-            self::assertSame($expectedBody, (string)$response->getBody()) :
-            self::assertStringContainsString($expectedBody, (string)$response->getBody());
+            self::assertSame($expectedBody, (string) $response->getBody()) :
+            self::assertStringContainsString($expectedBody, (string) $response->getBody());
     }
 }

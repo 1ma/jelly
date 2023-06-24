@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jelly\Constants;
 
 /**
- * Attribute Keys
+ * Attribute Keys.
  *
  * These are the names of the attribute keys that the framework may set on
  * the request on certain situations.

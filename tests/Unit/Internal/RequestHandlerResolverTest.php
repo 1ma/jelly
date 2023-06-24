@@ -14,7 +14,7 @@ final class RequestHandlerResolverTest extends TestCase
 {
     public function testHappyPath(): void
     {
-        $routes = new RouteCollection;
+        $routes = new RouteCollection();
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
 
         $request = new ServerRequest('GET', '/hello/jelly');
@@ -27,7 +27,7 @@ final class RequestHandlerResolverTest extends TestCase
 
     public function testNotFoundExecutionPath(): void
     {
-        $routes = new RouteCollection;
+        $routes = new RouteCollection();
         $routes->addRoute('GET', '/hello/{name}', 'bogus_handler');
 
         $request = new ServerRequest('GET', '/bye/jelly');
@@ -40,7 +40,7 @@ final class RequestHandlerResolverTest extends TestCase
 
     public function testBadMethodExecutionPath(): void
     {
-        $routes = new RouteCollection;
+        $routes = new RouteCollection();
         $routes->addRoute('GET', '/hello/{name}', 'hello_handler');
         $routes->addRoute('POST', '/hello/{name}', 'bogus_handler');
 
