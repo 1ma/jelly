@@ -44,7 +44,7 @@ final class MiddlewareChainResolver
 
     public function pushLocalMiddleware(string $name, string ...$groups): void
     {
-        foreach ($groups as $group) {
+        foreach (array_unique($groups) as $group) {
             $this->localMiddlewares[$group][] = $name;
         }
     }
