@@ -15,7 +15,7 @@ final class Assert
     /**
      * @throws \LogicException
      */
-    public static function hasService(ContainerInterface $container, string $service, string $message = null): void
+    public static function hasService(ContainerInterface $container, string $service, ?string $message = null): void
     {
         if (!$container->has($service)) {
             throw new \LogicException($message ?? "'$service' must be registered as a service and it is not");

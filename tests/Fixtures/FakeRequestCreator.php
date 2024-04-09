@@ -21,7 +21,7 @@ final class FakeRequestCreator implements ServerRequestCreatorInterface
         return $this->request;
     }
 
-    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = null, array $files = [], $body = null): ServerRequestInterface
+    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], ?array $post = null, array $files = [], $body = null): ServerRequestInterface
     {
         return $this->request;
     }
