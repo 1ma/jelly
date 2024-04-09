@@ -14,6 +14,7 @@ use Jelly\Tests\Fixtures\FakeRequestCreator;
 use Jelly\Tests\Fixtures\TripwireMiddleware;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message;
@@ -81,9 +82,7 @@ final class JellyTest extends TestCase
         );
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testWrapping(): void
     {
         $this->jelly->GET('/', 'index');
@@ -164,9 +163,7 @@ final class JellyTest extends TestCase
         );
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testRunMethod(): void
     {
         $this->jelly->GET('/', 'index');

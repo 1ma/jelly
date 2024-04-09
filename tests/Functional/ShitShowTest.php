@@ -10,6 +10,7 @@ use Jelly\Jelly;
 use LogicException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use UMA\DIC\Container;
@@ -22,9 +23,8 @@ final class ShitShowTest extends TestCase
 {
     /**
      * Tests framework exceptions when constructing the Jelly object.
-     *
-     * @dataProvider constructorBlowUpsProvider
      */
+    #[DataProvider('constructorBlowUpsProvider')]
     public function testConstructorBlowUps(ContainerInterface $container): void
     {
         $this->expectException(\LogicException::class);
@@ -51,9 +51,8 @@ final class ShitShowTest extends TestCase
 
     /**
      * Tests framework exceptions when adding route definitions.
-     *
-     * @dataProvider routeDefinitionExceptionsProvider
      */
+    #[DataProvider('routeDefinitionExceptionsProvider')]
     public function testRouteDefinitionExceptions(ContainerInterface $container): void
     {
         $this->expectException(\LogicException::class);
@@ -79,9 +78,8 @@ final class ShitShowTest extends TestCase
 
     /**
      * Tests framework exceptions while handling an actual request.
-     *
-     * @dataProvider runtimeErrorScenariosProvider
      */
+    #[DataProvider('runtimeErrorScenariosProvider')]
     public function testRuntimeErrorScenarios(ServerRequest $request, ContainerInterface $container): void
     {
         $this->expectException(\LogicException::class);
